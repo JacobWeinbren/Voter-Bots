@@ -17,8 +17,8 @@ def get_mapped_value(value, mapping, default=""):
 def get_education_group(edu_level):
     education_map = {
         1: "no formal",
-        2: "a basic",
-        3: "a secondary",
+        2: "a primary",
+        3: "some secondary",
         4: "a secondary",
         5: "a secondary",
         6: "a further",
