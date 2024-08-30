@@ -10,6 +10,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+              with:
+                  token: ${{ secrets.PAT_TOKEN }}
             - uses: actions/setup-node@v3
               with:
                   node-version: "18"
@@ -23,8 +25,8 @@ jobs:
               run: npm run post
             - name: Commit updated position
               run: |
-                  git config --local user.email "action@github.com"
-                  git config --local user.name "GitHub Action"
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
                   git add Israel/current_position.txt
                   git commit -m "Update current position" || echo "No changes to commit"
                   git push
