@@ -14,8 +14,10 @@ jobs:
               with:
                   node-version: "18"
             - run: npm ci
+            - name: Build TypeScript
+              run: npm run build
             - name: Post to Bluesky
               env:
                   BLUESKY_HANDLE: ${{ secrets.ISRAEL_BLUESKY_HANDLE }}
                   BLUESKY_PASSWORD: ${{ secrets.ISRAEL_BLUESKY_PASSWORD }}
-              run: npm run start
+              run: npm run post
