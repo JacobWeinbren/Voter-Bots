@@ -1,6 +1,5 @@
 .venv
 .DS_Store
 **/data/**
-package-lock.json
 node_modules/**
 .env
