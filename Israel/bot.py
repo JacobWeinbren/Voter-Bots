@@ -22,7 +22,7 @@ def get_education_group(edu_level):
         4: "a secondary",
         5: "a secondary",
         6: "a further",
-        7: "a partial university",
+        7: "some university",
         8: "a bachelor's",
         9: "a postgraduate",
     }
@@ -107,7 +107,7 @@ def get_random_policies(row):
         ),
         (
             row["v122"],
-            "equal rights for all citizens regardless of religion, race, or sex",
+            "equal rights for all citizens",
             policy_maps["equal_rights"],
         ),
     ]
@@ -147,24 +147,24 @@ def generate_tweet(row):
     education = get_education_group(row["educ"])
 
     vote_map = {
-        1: "Likud (Benjamin Netanyahu)",
-        2: "Yesh Atid (Yair Lapid)",
-        3: "National Unity (Benny Gantz)",
-        4: "Hatzionut Hadatit (Bezalel Smotrich & Itamar Ben-Gvir)",
-        5: "Shas (Aryeh Deri)",
-        6: "Yahadut HaTorah (Moshe Gafni)",
-        7: "Yisrael Beitenu (Avigdor Lieberman)",
-        8: "HaAvoda (Merav Michaeli)",
-        9: "Meretz (Zehava Gal-On)",
-        10: "HaBayit HaYehudi (Ayelet Shaked)",
-        11: "Hadash-Ta'al (Ayman Odeh)",
-        12: "Ra'am (Mansour Abbas)",
-        13: "Balad (Sami Abu Shehadeh)",
-        16: "The New Economic Party (Yaron Zelekha)",
-        17: "Tzeirim Boarim (Youths on Fire) (Hadar Muchtar)",
-        18: "Ometz party (Zvika Granot)",
-        19: "Economic Freedom (Abir Kara)",
-        20: "Yachad (Eli Yishai)",
+        1: "Likud",
+        2: "Yesh Atid",
+        3: "National Unity",
+        4: "Hatzionut Hadatit",
+        5: "Shas",
+        6: "Yahadut HaTorah",
+        7: "Yisrael Beitenu",
+        8: "HaAvoda",
+        9: "Meretz",
+        10: "HaBayit HaYehudi",
+        11: "Hadash-Ta'al",
+        12: "Ra'am",
+        13: "Balad",
+        16: "The New Economic Party",
+        17: "Tzeirim Boarim",
+        18: "Ometz party",
+        19: "Economic Freedom",
+        20: "Yachad",
         21: "Kol Hasviva",
         30: "Other",
         94: "Doesn't intend to vote",
@@ -201,8 +201,10 @@ def generate_and_save_tweets(df):
     with open("Israel/tweets.txt", "w", encoding="utf-8") as f:
         for _, row in df.iterrows():
             tweet = generate_tweet(row)
-            if tweet and len(tweet) <= 280:
+            if tweet and len(tweet) <= 300:
                 f.write(tweet + "\n\n\n")
+            else:
+                print(f"Tweet too long: {tweet}")
 
 
 if __name__ == "__main__":
