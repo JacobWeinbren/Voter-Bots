@@ -50,7 +50,7 @@
 50 - Arab sector building permits and demolitions
 51 - The Bedouin issue in the South
 52 - Improving citizen services
-53 - Government efficiency and prioritization
+53 - Government efficiency and prioritisation
 54 - Fighting corruption
 55 - Protecting the legal system and rule of law
 56 - Limiting court authority
@@ -63,14 +63,14 @@
 63 - Replacing the prime minister
 64 - Leftists and media influence
 65 - National unity and preventing civil war
-66 - Societal polarization and ethnic tensions
+66 - Societal polarisation and ethnic tensions
 67 - Citizens' quality of life and happiness
 68 - Multiple issues (unspecified)
 69 - Arab sector economic and educational improvement
 70 - Increasing Arab political representation
 71 - Promoting a free market economy
 72 - Minority rights
-73 - Legalization of certain substances
+73 - Legalisation of certain substances
 100 - Other (to be used only when absolutely necessary)
 101 - No problems
 102 - Don’t know

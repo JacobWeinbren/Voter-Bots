@@ -33,9 +33,9 @@ def get_religiosity(religiosity_level):
     religiosity_map = {
         1: "very religious",
         2: "religious",
-        3: "traditional religious",
-        4: "traditional, not-so-religious",
-        5: "non-religious, secular",
+        3: "traditional",
+        4: "not-so-religious",
+        5: "secular",
     }
     return get_mapped_value(religiosity_level, religiosity_map)
 
@@ -91,7 +91,7 @@ def get_random_policies(row):
         (row["v20"], "economics", policy_maps["economic_approach"]),
         (
             row["v21"],
-            "public life conducted by Jewish tradition",
+            "public life conducted according to Jewish tradition",
             policy_maps["religious_tradition"],
         ),
         (row["v36"], "civil marriage", policy_maps["civil_marriage"]),
@@ -175,9 +175,25 @@ def generate_tweet(row):
     if not vote or row["v104"] in [30, 94, 97, 98, 99]:
         return None
 
+    ethnicity_map = {
+        1: "Ashkenazi",
+        2: "Sephardic",
+        3: "Mizrachi",
+        5: "mixed ethnicity",
+        19: "Asian",
+        24: "Russian",
+        28: "Ethiopian",
+        30: "Moroccan",
+        31: "Yemenite",
+        36: "Bukhari",
+    }
+    ethnicity = get_mapped_value(row["v131"], ethnicity_map)
+
     tweet = f"I'm a"
     if religiosity:
         tweet += f" {religiosity}"
+    if ethnicity:
+        tweet += f" {ethnicity}"
     if religion:
         tweet += f" {religion}"
     tweet += f" {gender} with {education} education"
@@ -188,6 +204,8 @@ def generate_tweet(row):
     top_issue = get_top_issue(row["v8_code1"])
     if top_issue and top_issue != 68:
         tweet += f"{top_issue} is my top issue.\n\n"
+    else:
+        return None
 
     policies = get_random_policies(row)
     tweet += f"I {', and I '.join(policies)}.\n\n"
