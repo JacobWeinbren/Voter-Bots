@@ -1,0 +1,77 @@
+1 - General security
+2 - The Arab-Israeli conflict and Palestinian issues
+3 - Ending occupation and addressing Palestinian refugees
+4 - Homeland security and counter-terrorism
+5 - Hamas and Gaza border situation
+6 - Military deterrence and IDF capabilities
+7 - The Iranian threat and nuclear program
+8 - Settlement authorization in Judea and Samaria
+9 - Jewish-Arab relations
+10 - Foreign policy and international relations
+11 - Israel's international image and standing
+12 - The peace process
+13 - Renewing peace talks with Palestinians
+14 - Relations with diaspora Jews
+15 - The economy
+16 - Economic growth and wage increases
+17 - Reducing unemployment
+18 - Cost of living and price control
+19 - The state's lack of budget
+20 - Economic recovery from COVID-19
+21 - Domestic issues and society
+22 - Equality / Inequality and equal opportunities
+23 - Social justice and welfare
+24 - Social Security payments
+25 - Support for small businesses and self-employed
+26 - Workers' rights and dignified employment
+27 - Improving the middle class situation
+28 - Housing and real estate
+29 - Professional training
+30 - Youth and younger generation concerns
+31 - Elderly, disabled, and Holocaust survivor care
+32 - Education and research
+33 - Healthcare and COVID-19 response
+34 - Crime and law enforcement
+35 - Societal and educational violence
+36 - Domestic violence and women's safety
+37 - Transportation and infrastructure
+38 - Immigrant absorption and integration
+39 - Developing peripheral settlements
+40 - Environmental and animal protection
+41 - LGBT rights
+42 - Women's status in society
+43 - Religious-secular relations
+44 - Preserving the state's Jewish character
+45 - Separation of religion and state
+46 - Haredi military service and integration
+47 - Arab-Israeli citizens' rights and coexistence
+48 - Crime and violence in the Arab sector
+49 - Arab sector infrastructure and services
+50 - Arab sector building permits and demolitions
+51 - The Bedouin issue in the South
+52 - Improving citizen services
+53 - Government efficiency and prioritization
+54 - Fighting corruption
+55 - Protecting the legal system and rule of law
+56 - Limiting court authority
+57 - COVID-19 restrictions and vaccination policies
+58 - Protecting democracy and civil liberties
+59 - Promoting tolerance and humanistic values
+60 - Combating racism
+61 - Governance and electoral system reform
+62 - Public trust in government and politicians
+63 - Replacing the prime minister
+64 - Leftists and media influence
+65 - National unity and preventing civil war
+66 - Societal polarization and ethnic tensions
+67 - Citizens' quality of life and happiness
+68 - Multiple issues (unspecified)
+69 - Arab sector economic and educational improvement
+70 - Increasing Arab political representation
+71 - Promoting a free market economy
+72 - Minority rights
+73 - Legalization of certain substances
+100 - Other (to be used only when absolutely necessary)
+101 - No problems
+102 - Don’t know
+103 - Refuses to answer

@@ -17,7 +17,7 @@ def get_mapped_value(value, mapping, default=""):
 def get_education_group(edu_level):
     education_map = {
         1: "no formal",
-        2: "abasic",
+        2: "a basic",
         3: "a secondary",
         4: "a secondary",
         5: "a secondary",
@@ -78,17 +78,47 @@ def get_random_policies(row):
             3: "disagree with",
             4: "strongly disagree with",
         },
+        "equal_rights": {
+            1: "strongly agree with",
+            2: "agree with",
+            3: "disagree with",
+            4: "strongly disagree with",
+        },
     }
 
     policies = [
-        f"{get_mapped_value(row['v19'], policy_maps['palestinian_state'])} a Palestinian state",
-        f"{get_mapped_value(row['v20'], policy_maps['economic_approach'])} economics",
-        f"{get_mapped_value(row['v21'], policy_maps['religious_tradition'])} Jewish religious traditions in public life",
-        f"{get_mapped_value(row['v36'], policy_maps['civil_marriage'])} civil marriage",
-        f"{get_mapped_value(row['v120'], policy_maps['strong_leader'])} a strong leader who doesn't consider the Knesset or elections",
-        f"{get_mapped_value(row['v123'], policy_maps['freedom_of_speech'])} protecting freedom of speech for those criticising the state",
+        (row["v19"], "a Palestinian state", policy_maps["palestinian_state"]),
+        (row["v20"], "economics", policy_maps["economic_approach"]),
+        (
+            row["v21"],
+            "public life conducted by Jewish tradition",
+            policy_maps["religious_tradition"],
+        ),
+        (row["v36"], "civil marriage", policy_maps["civil_marriage"]),
+        (
+            row["v120"],
+            "a strong leader who doesn't consider the Knesset or elections",
+            policy_maps["strong_leader"],
+        ),
+        (
+            row["v123"],
+            "protecting freedom of speech for those criticising the state",
+            policy_maps["freedom_of_speech"],
+        ),
+        (
+            row["v122"],
+            "equal rights for all citizens regardless of religion, race, or sex",
+            policy_maps["equal_rights"],
+        ),
     ]
-    return random.sample([p for p in policies if p], 2)
+
+    valid_policies = [
+        f"{get_mapped_value(value, policy_map)} {policy_text}"
+        for value, policy_text, policy_map in policies
+        if value in policy_map
+    ]
+
+    return random.sample(valid_policies, min(2, len(valid_policies)))
 
 
 def get_top_issue(issue_code):
@@ -96,7 +126,7 @@ def get_top_issue(issue_code):
         return None
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    issues_file = os.path.join(script_dir, "issues.txt")
+    issues_file = os.path.join(script_dir, "issues-fix.txt")
 
     with open(issues_file, "r", encoding="utf-8") as f:
         issues = f.readlines()
@@ -104,7 +134,7 @@ def get_top_issue(issue_code):
     for issue in issues:
         code, description = issue.split("-", 1)
         if int(code) == issue_code:
-            return description.strip().lower()
+            return description.strip()
 
     return None
 
@@ -130,13 +160,19 @@ def generate_tweet(row):
         11: "Hadash-Ta'al (Ayman Odeh)",
         12: "Ra'am (Mansour Abbas)",
         13: "Balad (Sami Abu Shehadeh)",
+        16: "The New Economic Party (Yaron Zelekha)",
+        17: "Tzeirim Boarim (Youths on Fire) (Hadar Muchtar)",
+        18: "Ometz party (Zvika Granot)",
+        19: "Economic Freedom (Abir Kara)",
+        20: "Yachad (Eli Yishai)",
+        21: "Kol Hasviva",
         30: "Other",
         94: "Doesn't intend to vote",
         96: "Blank Ballot",
     }
 
     vote = get_mapped_value(row["v104"], vote_map)
-    if not vote or row["v104"] in [97, 98, 99] or pd.isna(row["age"]):
+    if not vote or row["v104"] in [30, 94, 97, 98, 99]:
         return None
 
     tweet = f"I'm a"
@@ -144,14 +180,17 @@ def generate_tweet(row):
         tweet += f" {religiosity}"
     if religion:
         tweet += f" {religion}"
-    tweet += f" {gender} with {education} education, aged {round(row['age'])}.\n\n"
+    tweet += f" {gender} with {education} education"
+    if not pd.isna(row["age"]):
+        tweet += f", aged {round(row['age'])}"
+    tweet += ".\n\n"
 
     top_issue = get_top_issue(row["v8_code1"])
-    if top_issue:
-        tweet += f"My top issue is {top_issue}.\n\n"
+    if top_issue and top_issue != 68:
+        tweet += f"{top_issue} is my top issue.\n\n"
 
     policies = get_random_policies(row)
-    tweet += f"I {' and '.join(policies)}.\n\n"
+    tweet += f"I {', and I '.join(policies)}.\n\n"
 
     tweet += f"I voted for {vote} in 2022."
 
@@ -159,10 +198,10 @@ def generate_tweet(row):
 
 
 def generate_and_save_tweets(df):
-    with open("tweets.txt", "w", encoding="utf-8") as f:
+    with open("Israel/tweets.txt", "w", encoding="utf-8") as f:
         for _, row in df.iterrows():
             tweet = generate_tweet(row)
-            if tweet:
+            if tweet and len(tweet) <= 280:
                 f.write(tweet + "\n\n")
 
 
