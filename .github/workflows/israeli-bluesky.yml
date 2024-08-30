@@ -21,3 +21,10 @@ jobs:
                   BLUESKY_HANDLE: ${{ secrets.ISRAEL_BLUESKY_HANDLE }}
                   BLUESKY_PASSWORD: ${{ secrets.ISRAEL_BLUESKY_PASSWORD }}
               run: npm run post
+            - name: Commit updated position
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add Israel/current_position.txt
+                  git commit -m "Update current position" || echo "No changes to commit"
+                  git push
