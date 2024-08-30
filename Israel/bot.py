@@ -202,7 +202,7 @@ def generate_and_save_tweets(df):
         for _, row in df.iterrows():
             tweet = generate_tweet(row)
             if tweet and len(tweet) <= 280:
-                f.write(tweet + "\n\n")
+                f.write(tweet + "\n\n\n")
 
 
 if __name__ == "__main__":

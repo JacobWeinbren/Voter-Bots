@@ -1,0 +1,20 @@
+name: Post from Israeli Bluesky Bot
+
+on:
+    schedule:
+        - cron: "0 8,20 * * *"
+
+jobs:
+    post-tweet:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+            - run: npm ci
+            - name: Post to Bluesky
+              env:
+                  BLUESKY_HANDLE: ${{ secrets.ISRAEL_BLUESKY_HANDLE }}
+                  BLUESKY_PASSWORD: ${{ secrets.ISRAEL_BLUESKY_PASSWORD }}
+              run: npm run start
