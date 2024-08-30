@@ -172,7 +172,7 @@ def generate_tweet(row):
     }
 
     vote = get_mapped_value(row["v104"], vote_map)
-    if not vote or row["v104"] in [30, 94, 97, 98, 99]:
+    if not vote or row["v104"] in [30, 94, 96, 97, 98, 99]:
         return None
 
     ethnicity_map = {
