@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"build": "npx tsc",
 		"post": "node dist/index.js"
 	},
 	"dependencies": {
@@ -7,6 +8,7 @@
 		"path": "^0.12.7"
 	},
 	"devDependencies": {
-		"@types/node": "^22.5.1"
+		"@types/node": "^22.5.1",
+		"typescript": "^5.0.0"
 	}
 }
