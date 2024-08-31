@@ -1,0 +1,73 @@
+name: Post from Bluesky Bots
+
+on:
+    workflow_dispatch:
+
+jobs:
+    post-tweet-israel:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  token: ${{ secrets.PAT_TOKEN }}
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
+            - run: npm ci
+            - name: Build TypeScript
+              run: npm run build
+            - name: Post to Bluesky for Israel
+              env:
+                  BLUESKY_HANDLE: ${{ secrets.ISRAEL_BLUESKY_HANDLE }}
+                  BLUESKY_PASSWORD: ${{ secrets.ISRAEL_BLUESKY_PASSWORD }}
+              run: npm run post Israel
+            - name: Commit updated position for Israel
+              run: |
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git add Israel/current_position.txt
+                  git commit -m "Update current position for Israel" || echo "No changes to commit"
+                  git push
+
+    post-tweet-canada:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  token: ${{ secrets.PAT_TOKEN }}
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
+            - run: npm ci
+            - name: Build TypeScript
+              run: npm run build
+            - name: Post to Bluesky for Canada
+              env:
+                  BLUESKY_HANDLE: ${{ secrets.CANADA_BLUESKY_HANDLE }}
+                  BLUESKY_PASSWORD: ${{ secrets.CANADA_BLUESKY_PASSWORD }}
+              run: npm run post Canada
+            - name: Commit updated position for Canada
+              run: |
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git add Canada/current_position.txt
+                  git commit -m "Update current position for Canada" || echo "No changes to commit"
+                  git push
+
+    schedule-israel:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Israel workflow
+              uses: benc-uk/workflow-dispatch@v1
+              with:
+                  workflow: Post from Bluesky Bots
+                  inputs: '{"country": "Israel"}'
+
+    schedule-canada:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Canada workflow
+              uses: benc-uk/workflow-dispatch@v1
+              with:
+                  workflow: Post from Bluesky Bots
+                  inputs: '{"country": "Canada"}'

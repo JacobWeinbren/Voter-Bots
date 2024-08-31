@@ -1,0 +1,15 @@
+name: Schedule Canada Posts
+
+on:
+    schedule:
+        - cron: "0 19,7 * * *"
+
+jobs:
+    trigger-canada:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Canada workflow
+              uses: benc-uk/workflow-dispatch@v1
+              with:
+                  workflow: Post from Bluesky Bots
+                  inputs: '{"country": "Canada"}'

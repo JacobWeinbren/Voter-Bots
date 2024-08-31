@@ -13,12 +13,18 @@ if (!BLUESKY_HANDLE || !BLUESKY_PASSWORD) {
 	process.exit(1);
 }
 
+const folderName = process.argv[2];
+if (!folderName) {
+	console.error("Missing folder name argument");
+	process.exit(1);
+}
+
 async function getNextTweet(): Promise<string> {
-	const tweetsPath = path.join(__dirname, "..", "Israel", "tweets.txt");
+	const tweetsPath = path.join(__dirname, "..", folderName, "tweets.txt");
 	const positionPath = path.join(
 		__dirname,
 		"..",
-		"Israel",
+		folderName,
 		"current_position.txt"
 	);
 

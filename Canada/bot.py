@@ -1,109 +1,263 @@
-cps21_province: province
-o Alberta (1)
-o British Columbia (2)
-o Manitoba (3)
-o New Brunswick (4)
-o Newfoundland and Labrador (5)
-o Northwest Territories (6)
-o Nova Scotia (7)
-o Nunavut (8)
-o Ontario (9)
-o Prince Edward Island (10)
-o Quebec (11)
-o Saskatchewan (12)
-o Yukon (13)
+import os
+import random
+import pandas as pd
 
-cps21_genderid: gender
-o A man (1)
-o A woman (2)
-o Non-binary (3)
-(Ignore 4 the other option)
 
-cps21_age: age
-Needs rounding
+def read_data():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    main_file_path = os.path.join(script_dir, "data", "2021.dta")
+    dict_file_path = os.path.join(script_dir, "data", "dict.dta")
+    main_data = pd.read_stata(main_file_path, convert_categoricals=False)
+    dict_data = pd.read_stata(dict_file_path, convert_categoricals=False)
+    return pd.merge(main_data, dict_data, on="cps21_ResponseId")
 
-cps21_education: education
-o No schooling (1)
-o Some elementary school (2)
-o Completed elementary school (3)
-o Some secondary/ high school (4)
-o Completed secondary/ high school (5)
-o Some technical, community college, CEGEP, College Classique (6)
-o Completed technical, community college, CEGEP, College Classique (7)
-o Some university (8)
-o Bachelor's degree (9)
-o Master's degree (10)
-o Professional degree or doctorate (11)
-o Don't know/ Prefer not to answer (12)
 
-cps21_vismin: visible minority
-▢ Arab (cps21_vismin_1)
-▢ Asian (cps21_vismin_2)
-▢ Black (cps21_vismin_3)
-▢ Indigenous (e.g. First Nations, Métis, Inuit, etc.) (cps21_vismin_4)
-▢ Latino/Latina (cps21_vismin_5)
-▢ South Asian (e.g., East Indian, Pakistani, Sri Lankan, etc.)
-(cps21_vismin_6)
-▢ Southeast Asian (e.g., Vietnamese, Cambodian, Laotian, Thai, etc.)
-(cps21_vismin_7)
-▢ West Asian (e.g., Iranian, Afghan, etc.) (cps21_vismin_8)
-▢ White (cps21_vismin_9)
-▢ Other (please specify) (cps21_vismin_10): cps21_vismin_10_TEXT
-▢ None of the above (cps21_vismin_11)
-▢ Prefer not to answer (cps21_vismin_12)
+def get_mapped_value(value, mapping, default=None):
+    return mapping.get(value, default)
 
-Pick the first one picked, then ignore the rest. Ignore 10-12
 
-cps21_religion: religion
+def get_province(province_code):
+    province_map = {
+        1: "Alberta",
+        2: "British Columbia",
+        3: "Manitoba",
+        4: "New Brunswick",
+        5: "Newfoundland and Labrador",
+        6: "Northwest Territories",
+        7: "Nova Scotia",
+        8: "Nunavut",
+        9: "Ontario",
+        10: "Prince Edward Island",
+        11: "Quebec",
+        12: "Saskatchewan",
+        13: "Yukon",
+    }
+    return get_mapped_value(province_code, province_map)
 
-o None/ Don't have one/ Atheist (1)
-o Agnostic (2)
-o Buddhist/ Buddhism (3)
-o Hindu (4)
-o Jewish/ Judaism/ Jewish Orthodox (5)
-o Muslim/ Islam (6)
-o Sikh/ Sikhism (7)
-o Anglican/ Church of England (8)
-o Baptist (9)
-o Catholic/ Roman Catholic/ RC (10)
-o Greek Orthodox/ Ukrainian Orthodox/ Russian Orthodox/ Eastern Orthodox (11)
-o Jehovah's Witness (12)
-o Lutheran (13)
-o Mormon/ Church of Jesus Christ of the Latter Day Saints (14)
-o Pentecostal/ Fundamentalist/ Born Again/ Evangelical (15)
-o Presbyterian (16)
-o Protestant (17)
-o United Church of Canada (18)
-o Christian Reformed (19)
-o Salvation Army (20)
-o Mennonite (21)
 
-Ignore 22-23
+def get_gender(gender_code):
+    gender_map = {1: "man", 2: "woman", 3: "non-binary"}
+    return get_mapped_value(gender_code, gender_map)
 
-cps21_votechoice: party vote 2021
-o Liberal Party (1)
-o Conservative Party (2)
-o NDP (3)
-o Bloc Québécois (4)
-o Green Party (5)
 
-cps21_imp_iss: most important issue
+def get_education_group(edu_level):
+    education_map = {
+        1: "no formal",
+        2: "a primary",
+        3: "a primary",
+        4: "some secondary",
+        5: "a secondary",
+        6: "a further",
+        7: "a further",
+        8: "some university",
+        9: "a bachelor's",
+        10: "a master's",
+        11: "a doctorate",
+    }
+    return get_mapped_value(edu_level, education_map, "postgraduate degree")
 
-economydum = Economy
-envirodum = Environment
-immigrationdum = Immigration
-healthcaredum = Healthcare
-housingdum = Housing
-seniorsdum = Senior Issues
-leadersdum = Leadership
-ethicsdum = Ethics
-educationdum = Education
-crimedum = Crime and Guns
-indigenousdum = Indigenous Issues
-welfaredum = Welfare
-electiondum = Electoral Reform
-womendum = Women's Issues and Abortion
-securitydum = Security, Defence and International Relations
-quebecdum = Quebec and Law 21
-racedum = Race Relations
-coviddum = Covid-19
+
+def get_visible_minority(vismin_codes):
+    vismin_map = {
+        1: "Arab",
+        2: "Asian",
+        3: "Black",
+        4: "Indigenous",
+        5: "Hispanic",
+        6: "South Asian",
+        7: "Southeast Asian",
+        8: "West Asian",
+        9: "White",
+    }
+    for code in range(1, 10):
+        if vismin_codes[f"cps21_vismin_{code}"] == 1:
+            return get_mapped_value(code, vismin_map)
+    return None
+
+
+def get_religion(religion_code):
+    religion_map = {
+        1: "Atheist",
+        2: "Agnostic",
+        3: "Buddhist",
+        4: "Hindu",
+        5: "Jewish",
+        6: "Muslim",
+        7: "Sikh",
+        8: "Anglican",
+        9: "Baptist",
+        10: "Catholic",
+        11: "Orthodox",
+        12: "Jehovah's Witness",
+        13: "Lutheran",
+        14: "Mormon",
+        15: "Evangelical",
+        16: "Presbyterian",
+        17: "Protestant",
+        18: "United Church",
+        19: "Christian Reformed",
+        20: "Salvation Army",
+        21: "Mennonite",
+    }
+    return get_mapped_value(religion_code, religion_map)
+
+
+def get_vote_choice(vote_code):
+    vote_map = {
+        1: "Liberal",
+        2: "Conservative",
+        3: "NDP",
+        4: "Bloc Québécois",
+        5: "Green",
+        6: "People's Party",
+    }
+    return get_mapped_value(vote_code, vote_map)
+
+
+def get_important_issue(row):
+    issue_map = {
+        "economydum": "The economy",
+        "envirodum": "The environment",
+        "immigrationdum": "Immigration",
+        "healthcaredum": "Healthcare",
+        "housingdum": "Housing",
+        "seniorsdum": "Senior issues",
+        "leadersdum": "Leadership",
+        "ethicsdum": "Ethics",
+        "educationdum": "Education",
+        "crimedum": "Crime and guns",
+        "indigenousdum": "Indigenous issues",
+        "welfaredum": "Welfare",
+        "electiondum": "Electoral reform",
+        "womendum": "Women's issues and abortion",
+        "securitydum": "Security, defence and IR",
+        "quebecdum": "Quebec and Law 21",
+        "racedum": "Race relations",
+        "coviddum": "Covid-19",
+    }
+
+    important_issues = [
+        issue_name for issue_var, issue_name in issue_map.items() if row[issue_var] == 1
+    ]
+    return random.choice(important_issues) if important_issues else None
+
+
+def get_random_policies(row):
+    policies = []
+    policy_map = {
+        "cps21_pos_fptp": (
+            "support proportional representation",
+            "oppose proportional representation",
+        ),
+        "cps21_pos_life": (
+            "support doctor-assisted end-of-life",
+            "oppose doctor-assisted end-of-life",
+        ),
+        "cps21_pos_cannabis": (
+            "support criminalising cannabis",
+            "oppose criminalising cannabis",
+        ),
+        "cps21_pos_carbon": ("support the carbon tax", "oppose the carbon tax"),
+        "cps21_pos_energy": (
+            "support more energy sector help",
+            "oppose more energy sector help",
+        ),
+        "cps21_pos_envreg": (
+            "support stricter environmental rules",
+            "oppose stricter environmental rules",
+        ),
+        "cps21_pos_jobs": (
+            "prioritise jobs over the environment",
+            "prioritise the environment over jobs",
+        ),
+        "cps21_pos_subsid": (
+            "support ending corporate subsidies",
+            "oppose ending corporate subsidies",
+        ),
+        "cps21_pos_trade": ("support more free trade", "oppose more free trade"),
+        "cps21_imm": (
+            "support more immigration",
+            "support less immigration",
+            "support current immigration levels",
+        ),
+        "cps21_refugees": (
+            "support more refugees",
+            "support fewer refugees",
+            "support current refugee levels",
+        ),
+        "cps21_quebec_sov": ("support Quebec sovereignty", "oppose Quebec sovereignty"),
+    }
+
+    for issue, options in policy_map.items():
+        if (
+            pd.notna(row[issue]) and row[issue] != 6
+        ):  # 6 is "Don't know/ Prefer not to answer"
+            value = int(row[issue])
+            if issue in ["cps21_imm", "cps21_refugees"]:
+                if 1 <= value <= len(options):
+                    policies.append(options[value - 1])
+            elif issue == "cps21_quebec_sov":
+                if value <= 2:
+                    policies.append(options[0])
+                elif value >= 3:
+                    policies.append(options[1])
+            else:
+                if value <= 2:
+                    policies.append(options[1])
+                elif value >= 4:
+                    policies.append(options[0])
+
+    return random.sample(policies, min(4, len(policies)))
+
+
+def generate_tweet(row):
+    gender = get_gender(row["cps21_genderid"])
+    important_issue = get_important_issue(row)
+    vote_choice = get_vote_choice(row["pes21_votechoice2021"])
+
+    if not gender or not important_issue or not vote_choice:
+        return None
+
+    province = get_province(row["cps21_province"])
+    age = round(row["cps21_age"]) if not pd.isna(row["cps21_age"]) else None
+    education = get_education_group(row["cps21_education"])
+    vismin = get_visible_minority(row)
+    religion = get_religion(row["cps21_religion"])
+
+    tweet = f"I'm a"
+    if vismin:
+        tweet += f" {religion} {vismin}"
+    tweet += f" {gender} from {province}"
+    tweet += f" with {education} education"
+    if age:
+        tweet += f", aged {age}"
+    tweet += ".\n\n"
+
+    tweet += f"{important_issue} is my top issue.\n\n"
+
+    policies = get_random_policies(row)
+    if policies:
+        tweet += "I " + ", I ".join(policies[:-1])
+        if len(policies) > 1:
+            tweet += f", and I {policies[-1]}"
+        else:
+            tweet += policies[0]
+        tweet += ".\n\n"
+
+    tweet += f"I voted {vote_choice} in 2021."
+
+    return tweet
+
+
+def generate_and_save_tweets(df):
+    with open("Canada/tweets.txt", "w", encoding="utf-8") as f:
+        for _, row in df.iterrows():
+            tweet = generate_tweet(row)
+            if tweet and len(tweet) <= 300:
+                f.write(tweet + "\n\n\n")
+
+
+if __name__ == "__main__":
+    df = read_data()
+    generate_and_save_tweets(df)
+    print("Tweets have been generated and saved to tweets.txt")

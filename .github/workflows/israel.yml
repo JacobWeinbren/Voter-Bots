@@ -1,0 +1,15 @@
+name: Schedule Israel Posts
+
+on:
+    schedule:
+        - cron: "0 8,20 * * *" # Runs at 8:00 and 20:00 UTC
+
+jobs:
+    trigger-israel:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Israel workflow
+              uses: benc-uk/workflow-dispatch@v1
+              with:
+                  workflow: Post from Bluesky Bots
+                  inputs: '{"country": "Israel"}'
