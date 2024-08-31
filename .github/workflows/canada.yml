@@ -3,6 +3,7 @@ name: Schedule Canada Posts
 on:
     schedule:
         - cron: "0 19,7 * * *"
+    workflow_dispatch:
 
 jobs:
     trigger-canada:
