@@ -2,7 +2,7 @@ name: Schedule Canada Posts
 
 on:
     schedule:
-        - cron: "0 19,7 * * *"
+        - cron: "0 12,23 * * *"
     workflow_dispatch:
 
 jobs:
