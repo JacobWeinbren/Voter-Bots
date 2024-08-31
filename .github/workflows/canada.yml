@@ -13,4 +13,5 @@ jobs:
               uses: benc-uk/workflow-dispatch@v1
               with:
                   workflow: Post from Bluesky Bots
+                  token: ${{ secrets.PAT_TOKEN }}
                   inputs: '{"country": "Canada"}'
