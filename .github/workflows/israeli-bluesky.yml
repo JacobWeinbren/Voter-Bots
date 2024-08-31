@@ -2,7 +2,7 @@ name: Post from Israeli Bluesky Bot
 
 on:
     schedule:
-        - cron: "0 8,20 * * *"
+        - cron: "30 8,20 * * *"
     workflow_dispatch:
 
 jobs:
