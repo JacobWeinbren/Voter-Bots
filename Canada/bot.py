@@ -146,35 +146,59 @@ def get_random_policies(row):
     policies = []
     policy_map = {
         "cps21_pos_fptp": (
-            "support proportional representation",
+            "strongly support proportional representation",
             "oppose proportional representation",
+            "support proportional representation",
+            "strongly oppose proportional representation",
         ),
         "cps21_pos_life": (
-            "support doctor-assisted end-of-life",
+            "strongly support doctor-assisted end-of-life",
             "oppose doctor-assisted end-of-life",
+            "support doctor-assisted end-of-life",
+            "strongly oppose doctor-assisted end-of-life",
         ),
         "cps21_pos_cannabis": (
-            "support criminalising cannabis",
+            "strongly support criminalising cannabis",
             "oppose criminalising cannabis",
+            "support criminalising cannabis",
+            "strongly oppose criminalising cannabis",
         ),
-        "cps21_pos_carbon": ("support the carbon tax", "oppose the carbon tax"),
+        "cps21_pos_carbon": (
+            "strongly support the carbon tax",
+            "oppose the carbon tax",
+            "support the carbon tax",
+            "strongly oppose the carbon tax",
+        ),
         "cps21_pos_energy": (
-            "support more energy sector help",
+            "strongly support more energy sector help",
             "oppose more energy sector help",
+            "support more energy sector help",
+            "strongly oppose more energy sector help",
         ),
         "cps21_pos_envreg": (
-            "support stricter environmental rules",
+            "strongly support stricter environmental rules",
             "oppose stricter environmental rules",
+            "support stricter environmental rules",
+            "strongly oppose stricter environmental rules",
         ),
         "cps21_pos_jobs": (
-            "prioritise jobs over the environment",
+            "strongly prioritise jobs over the environment",
             "prioritise the environment over jobs",
+            "prioritise jobs over the environment",
+            "strongly prioritise the environment over jobs",
         ),
         "cps21_pos_subsid": (
-            "support ending corporate subsidies",
+            "strongly support ending corporate subsidies",
             "oppose ending corporate subsidies",
+            "support ending corporate subsidies",
+            "strongly oppose ending corporate subsidies",
         ),
-        "cps21_pos_trade": ("support more free trade", "oppose more free trade"),
+        "cps21_pos_trade": (
+            "strongly support more free trade",
+            "oppose more free trade",
+            "support more free trade",
+            "strongly oppose more free trade",
+        ),
         "cps21_imm": (
             "support more immigration",
             "support less immigration",
@@ -185,7 +209,12 @@ def get_random_policies(row):
             "support fewer refugees",
             "support current refugee levels",
         ),
-        "cps21_quebec_sov": ("support Quebec sovereignty", "oppose Quebec sovereignty"),
+        "cps21_quebec_sov": (
+            "strongly support Quebec sovereignty",
+            "somewhat support Quebec sovereignty",
+            "somewhat oppose Quebec sovereignty",
+            "strongly oppose Quebec sovereignty",
+        ),
     }
 
     for issue, options in policy_map.items():
@@ -197,15 +226,17 @@ def get_random_policies(row):
                 if 1 <= value <= len(options):
                     policies.append(options[value - 1])
             elif issue == "cps21_quebec_sov":
-                if value <= 2:
-                    policies.append(options[0])
-                elif value >= 3:
-                    policies.append(options[1])
+                if 1 <= value <= 4:
+                    policies.append(options[value - 1])
             else:
-                if value <= 2:
-                    policies.append(options[1])
-                elif value >= 4:
-                    policies.append(options[0])
+                if value == 1:
+                    policies.append(options[3])  # Strongly disagree
+                elif value == 2:
+                    policies.append(options[1])  # Somewhat disagree
+                elif value == 4:
+                    policies.append(options[2])  # Somewhat agree
+                elif value == 5:
+                    policies.append(options[0])  # Strongly agree
 
     return random.sample(policies, min(4, len(policies)))
 
@@ -214,14 +245,14 @@ def generate_tweet(row):
     gender = get_gender(row["cps21_genderid"])
     important_issue = get_important_issue(row)
     vote_choice = get_vote_choice(row["pes21_votechoice2021"])
+    vismin = get_visible_minority(row)
 
-    if not gender or not important_issue or not vote_choice:
+    if not gender or not important_issue or not vote_choice or not vismin:
         return None
 
     province = get_province(row["cps21_province"])
     age = round(row["cps21_age"]) if not pd.isna(row["cps21_age"]) else None
     education = get_education_group(row["cps21_education"])
-    vismin = get_visible_minority(row)
     religion = get_religion(row["cps21_religion"])
 
     tweet = f"I'm a"
