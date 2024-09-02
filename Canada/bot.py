@@ -246,14 +246,20 @@ def generate_tweet(row):
     important_issue = get_important_issue(row)
     vote_choice = get_vote_choice(row["pes21_votechoice2021"])
     vismin = get_visible_minority(row)
+    religion = get_religion(row["cps21_religion"])
 
-    if not gender or not important_issue or not vote_choice or not vismin:
+    if (
+        not gender
+        or not important_issue
+        or not vote_choice
+        or not vismin
+        or not religion
+    ):
         return None
 
     province = get_province(row["cps21_province"])
     age = round(row["cps21_age"]) if not pd.isna(row["cps21_age"]) else None
     education = get_education_group(row["cps21_education"])
-    religion = get_religion(row["cps21_religion"])
 
     tweet = f"I'm a"
     if vismin:
