@@ -41,6 +41,7 @@ jobs:
               run: |
                   git config --local user.email "github-actions[bot]@users.noreply.github.com"
                   git config --local user.name "github-actions[bot]"
+                  git pull origin main 
                   git add Britain/current_position.txt
                   git commit -m "Update current position for Britain" || echo "No changes to commit"
                   git push
