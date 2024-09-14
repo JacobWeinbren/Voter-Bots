@@ -184,7 +184,7 @@ def get_mii_category(mii_code):
         23: ("🛡️ Defence", "is"),
         24: ("🚨 Foreign emergency", "is"),
         25: ("🚨 Domestic emergency", "is"),
-        26: ("💹 Economy (general)", "is"),
+        26: ("💷 Economy (general)", "is"),
         27: ("💵 Personal finances", "are"),
         28: ("📉 Unemployment", "is"),
         29: ("💸 Taxation", "is"),
@@ -392,20 +392,20 @@ def generate_policies(row):
 
     # Culture Wars ('cwLanguage', 'cwStatues', 'cwTraining', 'cwAuthors', 'cwTrans', 'cwParents')
     culture_wars_questions = [
-        "cwLanguage",
-        "cwStatues",
-        "cwTraining",
-        "cwAuthors",
-        "cwTrans",
-        "cwParents",
+        "cwLanguageW26W27",
+        "cwStatuesW26W27",
+        "cwTrainingW26W27",
+        "cwAuthorsW26W27",
+        "cwTransW26W27",
+        "cwParentsW26W27",
     ]
     culture_wars_texts = {
-        "cwLanguage": "Too many people are easily offended these days over the language that others use.",
-        "cwStatues": "Statues of historical figures shouldn't be taken down, even if they profited from the slave trade.",
-        "cwTraining": "Workplaces should end mandatory diversity training.",
-        "cwAuthors": "Curriculums should include fewer white male authors and more female and non-white authors.",
-        "cwTrans": "Transgender women should be allowed to compete in female sports.",
-        "cwParents": "BBC children's shows should portray more families with same-sex parents.",
+        "cwLanguageW26W27": "Too many people are easily offended these days over the language that others use.",
+        "cwStatuesW26W27": "Statues of historical figures shouldn't be taken down, even if they profited from the slave trade.",
+        "cwTrainingW26W27": "Workplaces should end mandatory diversity training.",
+        "cwAuthorsW26W27": "Curriculums should include fewer white male authors and more female and non-white authors.",
+        "cwTransW26W27": "Transgender women should be allowed to compete in female sports.",
+        "cwParentsW26W27": "BBC children's shows should portray more families with same-sex parents.",
     }
     for question in culture_wars_questions:
         if question in row and row[question] != 99:
