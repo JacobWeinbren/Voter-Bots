@@ -9,4 +9,18 @@ def post_to_bluesky(tweet, image_path):
     with open(image_path, "rb") as f:
         img_data = f.read()
 
-    client.post(text="", image=img_data, image_alt=tweet)
+    # Upload the image first
+    upload = client.com.atproto.repo.upload_blob(img_data)
+
+    # Create the post with the uploaded image
+    client.com.atproto.repo.create_record(
+        repo=client.me.did,
+        collection="app.bsky.feed.post",
+        record={
+            "text": "",
+            "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [{"alt": tweet, "image": upload.blob}],
+            },
+        },
+    )
