@@ -45,17 +45,7 @@ def generate_tweet(row, selected_indices):
     eu_referendum_vote = get_eu_referendum_vote(row.get("euRefVoteW9"))
     eu_referendum_intention = get_eu_referendum_intention(row.get("euRefVoteAfterW29"))
 
-    if not all(
-        [
-            gender,
-            constituency,
-            top_issue,
-            age,
-            economic_lean,
-            social_lean,
-            voting_intention,
-        ]
-    ):
+    if not gender or not voting_intention:
         return None
 
     # Handle optional fields
@@ -63,11 +53,21 @@ def generate_tweet(row, selected_indices):
     religion_str = f"{religion} " if religion else ""
     education_str = f", with {education}" if education else ""
 
-    tweet = f"👤 I'm a {ethnicity_str}{religion_str}{gender} from {constituency} {country_emoji}, aged {age}{education_str}."
+    tweet = f"👤 I'm a {ethnicity_str}{religion_str}{gender}"
+    if constituency and country_emoji:
+        tweet += f" from {constituency} {country_emoji}"
+    if age:
+        tweet += f", aged {age}"
+    tweet += f"{education_str}."
     if home_ownership:
         tweet += f" 🏠 {home_ownership}."
-    tweet += f"\n\n{top_issue} {verb} my top issue.\n\n"
-    tweet += f"🤔 I am {economic_lean} and {social_lean}.\n\n"
+    tweet += "\n\n"
+
+    if top_issue:
+        tweet += f"{top_issue} {verb} my top issue.\n\n"
+
+    if economic_lean and social_lean:
+        tweet += f"🤔 I am {economic_lean} and {social_lean}.\n\n"
 
     if preferred_party and preferred_party != voting_intention:
         tweet += f"🗳️ I wanted to vote {preferred_party}, but I tactically voted {voting_intention} in 2024."

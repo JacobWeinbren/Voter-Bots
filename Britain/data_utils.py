@@ -460,8 +460,8 @@ def get_country_emoji(country_code):
 
 def get_eu_referendum_intention(code):
     intention_map = {
-        0: "🇪🇺 I would vote to rejoin the EU",
-        1: "🚫 I would vote to stay out of the EU",
+        0: "🇪🇺 I would vote to rejoin the EU today",
+        1: "🚫 I would vote to stay out of the EU today",
     }
     return intention_map.get(code, None)
 
