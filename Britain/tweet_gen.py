@@ -55,7 +55,7 @@ def generate_tweet(row):
     if home_ownership:
         tweet += f" 🏠 {home_ownership}."
     tweet += f"\n\n{top_issue} {verb} my top issue.\n\n"
-    tweet += f"I am economically {economic_lean} and socially {social_lean}.\n\n"
+    tweet += f"🤔 I am economically {economic_lean} and socially {social_lean}.\n\n"
 
     if preferred_party and preferred_party != voting_intention:
         tweet += f"🗳️ I wanted to vote {preferred_party}, but I tactically voted {voting_intention} in 2024.\n\n"
