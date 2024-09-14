@@ -2,6 +2,7 @@ import os
 from data_utils import read_data
 from tweet_gen import generate_tweet
 from image_gen import save_chat_bubble_image
+from datetime import datetime
 
 
 def generate_all_tweets(df):
@@ -10,6 +11,7 @@ def generate_all_tweets(df):
 
     with open("Britain/tweets/tweets.txt", "w", encoding="utf-8") as f:
         for index, row in df.iterrows():
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             tweet = generate_tweet(row)
             if tweet is not None:
                 # Save tweet
@@ -19,10 +21,12 @@ def generate_all_tweets(df):
                 image_path = f"Britain/images/tweet_{index}.png"
                 save_chat_bubble_image(tweet, image_path)
                 print(
-                    f"Generated tweet and image for position {index} out of {len(df)}"
+                    f"[{current_time}] Generated tweet and image for position {index} out of {len(df)}"
                 )
             else:
-                print(f"Failed to generate tweet for position {index} out of {len(df)}")
+                print(
+                    f"[{current_time}] Failed to generate tweet for position {index} out of {len(df)}"
+                )
 
 
 if __name__ == "__main__":
