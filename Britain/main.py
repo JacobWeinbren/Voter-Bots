@@ -24,6 +24,7 @@ def generate_all_tweets(df):
                     f"[{current_time}] Generated tweet and image for position {index} out of {len(df)}"
                 )
             else:
+                f.write(f"\n\n\n")
                 print(
                     f"[{current_time}] Failed to generate tweet for position {index} out of {len(df)}"
                 )
