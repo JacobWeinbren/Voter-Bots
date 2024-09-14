@@ -67,7 +67,9 @@ def generate_tweet(row):
         policies = random.sample(policies, 3)
     if policies:
         tweet += "Some opinions I hold:\n"
-        for policy in policies:
-            tweet += f"• {policy}\n"
+        for i, policy in enumerate(policies):
+            tweet += f"• {policy}"
+            if i < len(policies) - 1:
+                tweet += "\n"
 
     return tweet
