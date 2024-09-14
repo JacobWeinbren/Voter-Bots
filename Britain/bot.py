@@ -15,23 +15,25 @@ def post_single_tweet():
     with open("Britain/tweets/tweets.txt", "r", encoding="utf-8") as f:
         tweets = f.read().split("\n\n\n")
 
-    # Post the next tweet if available
-    if current_position < len(tweets):
+    # Find the next valid tweet with an image
+    while current_position < len(tweets):
         tweet = tweets[current_position].strip()
-        if tweet:
-            image_path = f"Britain/images/tweet_{current_position}.png"
-            if os.path.exists(image_path):
-                post_to_bluesky(tweet, image_path)
-                print(f"Posted tweet {current_position} to Bluesky")
-            else:
-                print(f"Image not found for tweet {current_position}")
-
-        # Update and save the new position
-        current_position += 1
-        with open(position_file, "w") as f:
-            f.write(str(current_position))
-    else:
-        print("All tweets have been posted")
+        image_path = f"Britain/images/tweet_{current_position}.png"
+        
+        if tweet and os.path.exists(image_path):
+            post_to_bluesky(tweet, image_path)
+            print(f"Posted tweet {current_position} to Bluesky")
+            
+            # Update and save the new position
+            current_position += 1
+            with open(position_file, "w") as f:
+                f.write(str(current_position))
+            break
+        else:
+            current_position += 1
+    
+    if current_position >= len(tweets):
+        print("All tweets have been posted or no more valid tweets with images found")
 
 
 if __name__ == "__main__":

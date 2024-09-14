@@ -24,12 +24,11 @@ cons_df = pd.read_csv(cons_file_path)
 
 def get_constituency_name(constituency_code):
     if constituency_code and not pd.isna(constituency_code):
-        constituency = cons_df[cons_df["PCON24CD"] == constituency_code][
-            "PCON24NM"
-        ].iloc[0]
-        return constituency if pd.notna(constituency) else None
-    else:
-        return None
+        matching_rows = cons_df[cons_df["PCON24CD"] == constituency_code]
+        if not matching_rows.empty:
+            constituency = matching_rows["PCON24NM"].iloc[0]
+            return constituency if pd.notna(constituency) else None
+    return None
 
 
 def get_education_group(code):
