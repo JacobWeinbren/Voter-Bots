@@ -1,6 +1,7 @@
 .venv
 .DS_Store
 **/data/**
+!Britain/data
 node_modules/**
 .env
 dist/** 

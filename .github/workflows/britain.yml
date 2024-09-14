@@ -6,16 +6,6 @@ on:
     workflow_dispatch:
 
 jobs:
-    trigger-britain:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Trigger Britain workflow
-              uses: benc-uk/workflow-dispatch@v1
-              with:
-                  workflow: Post from Bluesky Bots
-                  token: ${{ secrets.PAT_TOKEN }}
-                  inputs: '{"country": "Britain"}'
-
     post-tweet:
         runs-on: ubuntu-latest
         steps:
