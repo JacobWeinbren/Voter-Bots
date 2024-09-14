@@ -46,7 +46,7 @@ jobs:
               env:
                   BLUESKY_HANDLE: ${{ secrets.BRITAIN_BLUESKY_HANDLE }}
                   BLUESKY_PASSWORD: ${{ secrets.BRITAIN_BLUESKY_PASSWORD }}
-              run: python Britain/main.py
+              run: python Britain/bot.py
 
             - name: Update current position
               run: |
