@@ -23,4 +23,11 @@ def post_to_bluesky(tweet, image_path):
                 "images": [{"alt": tweet, "image": upload.blob}],
             },
         },
+        data={
+            "text": "",
+            "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [{"alt": tweet, "image": upload.blob}],
+            },
+        },
     )
