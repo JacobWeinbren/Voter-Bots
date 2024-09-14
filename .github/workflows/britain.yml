@@ -1,0 +1,67 @@
+name: Schedule Britain Posts
+
+on:
+    schedule:
+        - cron: "0 8,12,17,21 * * *"
+    workflow_dispatch:
+
+jobs:
+    trigger-britain:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Britain workflow
+              uses: benc-uk/workflow-dispatch@v1
+              with:
+                  workflow: Post from Bluesky Bots
+                  token: ${{ secrets.PAT_TOKEN }}
+                  inputs: '{"country": "Britain"}'
+
+    post-tweet:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  token: ${{ secrets.PAT_TOKEN }}
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.9"
+
+            - name: Cache pip packages
+              uses: actions/cache@v3
+              with:
+                  path: ~/.cache/pip
+                  key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pip-
+
+            - name: Cache Playwright browsers
+              uses: actions/cache@v3
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/requirements.txt') }}
+                  restore-keys: |
+                      ${{ runner.os }}-playwright-
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+
+            - name: Install Playwright browsers
+              run: playwright install chromium
+
+            - name: Post to Bluesky
+              env:
+                  BLUESKY_HANDLE: ${{ secrets.BRITAIN_BLUESKY_HANDLE }}
+                  BLUESKY_PASSWORD: ${{ secrets.BRITAIN_BLUESKY_PASSWORD }}
+              run: python Britain/main.py
+
+            - name: Update current position
+              run: |
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git add Britain/current_position.txt
+                  git commit -m "Update current position for Britain" || echo "No changes to commit"
+                  git push
