@@ -20,7 +20,7 @@ from data_utils import (
 def generate_tweet(row):
     gender = get_gender(row["gender"])
     constituency = get_constituency_name(row["new_pcon_codeW29"])
-    top_issue, verb = get_mii_category(row["miiW29"])
+    top_issue, verb = get_mii_category(row["mii_cat_llmW29"])
     age = int(row["ageW29"]) if not pd.isna(row["ageW29"]) else None
     religion = get_religion(row["p_religionW29"])
     ethnicity = get_ethnicity(row["p_ethnicityW29"])
