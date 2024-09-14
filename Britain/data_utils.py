@@ -242,11 +242,11 @@ def get_party_name(party_code, country=None):
         4: "Scottish National Party (SNP)",
         5: "Plaid Cymru",
         6: "United Kingdom Independence Party (UKIP)",
-        7: "Green Party",
+        7: "Green",
         8: "British National Party (BNP)",
-        11: "Change UK – The Independent Group",
-        12: "Brexit Party/Reform UK",
-        13: "Independent Candidate",
+        11: "Change UK",
+        12: "Reform UK",
+        13: "Independent",
         9: "Other",
         99: None,  # Don't know
     }
@@ -263,13 +263,13 @@ party_emojis = {
     "Conservative": "🟦",
     "Labour": "🟥",
     "Liberal Democrat": "🟧",
-    "Green Party": "🟩",
+    "Green": "🟩",
     "Scottish National Party (SNP)": "🟨",
     "Plaid Cymru": "🟩",
     "United Kingdom Independence Party (UKIP)": "🟪",
-    "Brexit Party/Reform UK": "🟦",
-    "Change UK – The Independent Group": "⬛",
-    "Independent Candidate": "⬜",
+    "Reform UK": "🟦",
+    "Change UK": "⬛",
+    "Independent": "⬜",
     "Other": "⬜",
 }
 
