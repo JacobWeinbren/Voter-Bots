@@ -81,8 +81,7 @@ def generate_tweet(row, selected_indices):
 
     if eu_referendum_vote or eu_referendum_intention:
         if eu_referendum_vote and eu_referendum_intention:
-            intention_without_emoji = eu_referendum_intention[2:].strip()
-            tweet += f"{eu_referendum_vote} and {eu_referendum_intention[:2]} {intention_without_emoji[0].lower()}{intention_without_emoji[1:]}.\n\n"
+            tweet += f"{eu_referendum_vote} and {eu_referendum_intention}.\n\n"
         elif eu_referendum_vote:
             tweet += f"{eu_referendum_vote}.\n\n"
         elif eu_referendum_intention:

@@ -9,7 +9,7 @@ import numpy as np
 def select_weighted_respondents(df):
     weights = df["wt_new_W29"].dropna()
     num_sample = len(weights)
-    num_select = 365 * 4 * 5  # 7300
+    num_select = 365 * 4 * 5 * 8  # Eight is the approx buffer
 
     sample_indices = np.random.choice(
         weights.index, size=num_sample, replace=True, p=weights / weights.sum()
