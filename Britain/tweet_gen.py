@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import numpy as np
 from data_utils import (
     get_gender,
     get_education_group,
@@ -14,10 +15,17 @@ from data_utils import (
     get_constituency_name,
     get_country_emoji,
     generate_policies,
+    get_eu_referendum_intention,
+    get_eu_referendum_vote,
+    get_past_vote,
 )
 
 
-def generate_tweet(row):
+def generate_tweet(row, selected_indices):
+    if row.name not in selected_indices:
+        print(f"Skipping {row.name} because it's not in the selected indices")
+        return None
+
     gender = get_gender(row["gender"])
     constituency = get_constituency_name(row["new_pcon_codeW29"])
     top_issue, verb = get_mii_category(row["mii_cat_llmW29"])
@@ -32,6 +40,10 @@ def generate_tweet(row):
 
     voting_intention = get_voting_intention(row)
     preferred_party = get_preferred_party(row)
+    past_vote = get_past_vote(row)
+
+    eu_referendum_vote = get_eu_referendum_vote(row.get("euRefVoteW9"))
+    eu_referendum_intention = get_eu_referendum_intention(row.get("euRefVoteAfterW29"))
 
     if not all(
         [
@@ -55,12 +67,26 @@ def generate_tweet(row):
     if home_ownership:
         tweet += f" 🏠 {home_ownership}."
     tweet += f"\n\n{top_issue} {verb} my top issue.\n\n"
-    tweet += f"🤔 I am economically {economic_lean} and socially {social_lean}.\n\n"
+    tweet += f"🤔 I am {economic_lean} and {social_lean}.\n\n"
 
     if preferred_party and preferred_party != voting_intention:
-        tweet += f"🗳️ I wanted to vote {preferred_party}, but I tactically voted {voting_intention} in 2024.\n\n"
+        tweet += f"🗳️ I wanted to vote {preferred_party}, but I tactically voted {voting_intention} in 2024."
     else:
-        tweet += f"🗳️ I voted {voting_intention} in 2024.\n\n"
+        tweet += f"🗳️ I voted {voting_intention} in 2024."
+
+    if past_vote:
+        tweet += f" In 2019, I voted {past_vote}."
+
+    tweet += "\n\n"
+
+    if eu_referendum_vote or eu_referendum_intention:
+        if eu_referendum_vote and eu_referendum_intention:
+            intention_without_emoji = eu_referendum_intention[2:].strip()
+            tweet += f"{eu_referendum_vote} and {eu_referendum_intention[:2]} {intention_without_emoji[0].lower()}{intention_without_emoji[1:]}.\n\n"
+        elif eu_referendum_vote:
+            tweet += f"{eu_referendum_vote}.\n\n"
+        elif eu_referendum_intention:
+            tweet += f"{eu_referendum_intention}.\n\n"
 
     policies = generate_policies(row)
     if len(policies) > 3:

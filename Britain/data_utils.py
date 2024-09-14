@@ -72,15 +72,15 @@ def get_economic_lean(lr_scale):
         return None
 
     if 0 <= lr_scale <= 2:
-        return "strongly left-wing ⬅️"
+        return "strongly economically left-wing ⬅️"
     elif 2 < lr_scale <= 4:
-        return "moderately left-wing ⬅️"
+        return "moderately economically left-wing ⬅️"
     elif 4 < lr_scale <= 6:
-        return "centrist ⚖️"
+        return "economically centrist ⚖️"
     elif 6 < lr_scale <= 8:
-        return "moderately right-wing ➡️"
+        return "moderately economically right-wing ➡️"
     elif 8 < lr_scale <= 10:
-        return "strongly right-wing ➡️"
+        return "strongly economically right-wing ➡️"
     else:
         return None
 
@@ -95,15 +95,15 @@ def get_social_lean(al_scale):
         return None
 
     if 0 <= al_scale <= 2:
-        return "strongly libertarian 🕊️"
+        return "strongly socially liberal 🕊️"
     elif 2 < al_scale <= 4:
-        return "moderately libertarian 🕊️"
+        return "moderately socially liberal 🕊️"
     elif 4 < al_scale <= 6:
-        return "centrist ⚖️"
+        return "socially centrist ⚖️"
     elif 6 < al_scale <= 8:
-        return "moderately authoritarian 🔒"
+        return "moderately socially authoritarian 🔒"
     elif 8 < al_scale <= 10:
-        return "strongly authoritarian 🔒"
+        return "strongly socially authoritarian 🔒"
     else:
         return None
 
@@ -268,6 +268,7 @@ party_emojis = {
     "Plaid Cymru": "🟩",
     "United Kingdom Independence Party (UKIP)": "🟪",
     "Reform UK": "🟦",
+    "Brexit Party": "🟦",
     "Change UK": "⬛",
     "Independent": "⬜",
     "Other": "⬜",
@@ -294,6 +295,20 @@ def get_preferred_party(row):
     party_code = row.get("partyPreferredW29")
     country = row.get("countryW29")
     party_name = get_party_name(party_code, country)
+    if party_code == 99 or not party_name:
+        return None
+    return get_party_with_emoji(party_name)
+
+
+def get_past_vote(row):
+    party_code = row.get("generalElectionVoteW19")
+    country = row.get("countryW19")
+    party_name = get_party_name(party_code, country)
+
+    # Special handling for Brexit Party
+    if party_code == 12:
+        party_name = "Brexit Party"
+
     if party_code == 99 or not party_name:
         return None
     return get_party_with_emoji(party_name)
@@ -441,3 +456,19 @@ def get_country_emoji(country_code):
         3: "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
     }
     return country_emojis.get(country_code, "")
+
+
+def get_eu_referendum_intention(code):
+    intention_map = {
+        0: "🇪🇺 Would vote to rejoin the EU",
+        1: "🚫 Would vote to stay out of the EU",
+    }
+    return intention_map.get(code, None)
+
+
+def get_eu_referendum_vote(code):
+    vote_map = {
+        0: "🇪🇺 Voted to remain in the EU",
+        1: "🚫 Voted to leave the EU",
+    }
+    return vote_map.get(code, None)

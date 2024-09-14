@@ -14,4 +14,4 @@ for variable in df.columns:
 
 # Print new_pcon_codeW29
 print("\nnew_pcon_codeW29:")
-print(df["new_pcon_codeW29"])
+print(df["wt_new_W29"])
