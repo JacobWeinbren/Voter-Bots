@@ -29,7 +29,6 @@ def generate_all_tweets(df):
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             tweet = generate_tweet(row, selected_indices)
             if tweet is not None:
-                count += 1
 
                 # Save tweet
                 f.write(f"{tweet}\n\n\n")
@@ -40,6 +39,8 @@ def generate_all_tweets(df):
                 print(
                     f"[{current_time}] Generated tweet and image for position {index} out of {len(df)}"
                 )
+
+                count += 1
             else:
                 print(
                     f"[{current_time}] Failed to generate tweet for position {index} out of {len(df)}"

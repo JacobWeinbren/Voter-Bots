@@ -19,11 +19,11 @@ def post_single_tweet():
     while current_position < len(tweets):
         tweet = tweets[current_position].strip()
         image_path = f"Britain/images/tweet_{current_position}.png"
-        
+
         if tweet and os.path.exists(image_path):
             post_to_bluesky(tweet, image_path)
             print(f"Posted tweet {current_position} to Bluesky")
-            
+
             # Update and save the new position
             current_position += 1
             with open(position_file, "w") as f:
@@ -31,7 +31,7 @@ def post_single_tweet():
             break
         else:
             current_position += 1
-    
+
     if current_position >= len(tweets):
         print("All tweets have been posted or no more valid tweets with images found")
 
