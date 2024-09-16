@@ -29,18 +29,20 @@ def generate_all_tweets(df):
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             tweet = generate_tweet(row, selected_indices)
             if tweet is not None:
-
                 # Save tweet
                 f.write(f"{tweet}\n\n\n")
 
                 # Save image
                 image_path = f"Britain/images/tweet_{count}.png"
-                save_chat_bubble_image(tweet, image_path)
-                print(
-                    f"[{current_time}] Generated tweet and image for position {index} out of {len(df)}"
-                )
-
-                count += 1
+                if save_chat_bubble_image(tweet, image_path):
+                    print(
+                        f"[{current_time}] Generated tweet and image for position {index} out of {len(df)}"
+                    )
+                    count += 1
+                else:
+                    print(
+                        f"[{current_time}] Generated tweet but failed to create image for position {index} out of {len(df)}"
+                    )
             else:
                 print(
                     f"[{current_time}] Failed to generate tweet for position {index} out of {len(df)}"

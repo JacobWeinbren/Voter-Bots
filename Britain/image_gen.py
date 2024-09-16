@@ -1,4 +1,4 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 
 def generate_chat_bubble(tweet):
@@ -37,8 +37,12 @@ def generate_chat_bubble(tweet):
         </html>
         """
 
-        page.set_content(html_content)
-        page.wait_for_timeout(1000)
+        try:
+            page.set_content(html_content, timeout=60000)
+        except PlaywrightTimeoutError:
+            print(f"Timeout occurred while setting content for tweet: {tweet[:50]}...")
+            browser.close()
+            return None
 
         content_box = page.query_selector("body > div").bounding_box()
         page.set_viewport_size(
@@ -56,5 +60,8 @@ def generate_chat_bubble(tweet):
 
 def save_chat_bubble_image(tweet, output_path):
     screenshot = generate_chat_bubble(tweet)
-    with open(output_path, "wb") as f:
-        f.write(screenshot)
+    if screenshot:
+        with open(output_path, "wb") as f:
+            f.write(screenshot)
+        return True
+    return False
