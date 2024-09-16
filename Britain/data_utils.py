@@ -325,7 +325,7 @@ def generate_policies(row):
         elif preference == 2:
             policies.append("🗳️ Seats in parliament should match vote percentages.")
 
-    # EU Integration Grid (Example with 'EUIntegrationSelf')
+    # EU Integration Grid
     if "EUIntegrationSelfW29" in row and row["EUIntegrationSelfW29"] != 99:
         position = row["EUIntegrationSelfW29"]
         if position >= 7:
@@ -346,6 +346,145 @@ def generate_policies(row):
             policies.append("🟰 Government should make incomes more equal.")
         else:
             policies.append("⚖️ Income equality requires a balanced approach.")
+
+    # Environmental Protection vs Economic Growth
+    if "enviroGrowthW28" in row and row["enviroGrowthW28"] != 99:
+        value = row["enviroGrowthW28"]
+        if value >= 7:
+            policies.append(
+                "🌳 Protecting the environment should have priority over economic growth."
+            )
+        elif value <= 3:
+            policies.append(
+                "💰 Economic growth should have priority over environmental protection."
+            )
+        else:
+            policies.append("⚖️ We need a balance between the environment and growth.")
+
+    # Immigration Impact (Economy and Culture)
+    econ_value = row.get("immigEconW27")
+    cultural_value = row.get("immigCulturalW27")
+
+    if econ_value not in [9999, None] and cultural_value not in [9999, None]:
+        avg_value = (econ_value + cultural_value) / 2
+        if avg_value >= 5:
+            policies.append(
+                "🌍 Immigration is beneficial for Britain's economy and culture."
+            )
+        elif avg_value <= 3:
+            policies.append(
+                "🚫 Immigration has negative effects on Britain's economy and culture."
+            )
+        else:
+            policies.append("⚖️ Immigration has mixed or neutral impacts on Britain.")
+    elif econ_value not in [9999, None]:
+        if econ_value >= 5:
+            policies.append("💼 Immigration is good for Britain's economy.")
+        elif econ_value <= 3:
+            policies.append("📉 Immigration is bad for Britain's economy.")
+        else:
+            policies.append("⚖️ Immigration has a neutral impact on the economy.")
+    elif cultural_value not in [9999, None]:
+        if cultural_value >= 5:
+            policies.append("🎨 Immigration enriches Britain's cultural life.")
+        elif cultural_value <= 3:
+            policies.append("📉 Immigration undermines Britain's cultural life.")
+        else:
+            policies.append("⚖️ Immigration neither enriches nor undermines culture.")
+
+    # Equality Efforts
+    equality_issues = {
+        "blackEqualityW27": "Attempts to give equal opportunities to ethnic minorities",
+        "femaleEqualityW27": "Attempts to give equal opportunities to women",
+        "gayEqualityW27": "Attempts to give equal opportunities to gays and lesbians",
+    }
+    equality_emojis = {
+        "blackEqualityW27": "🤝",
+        "femaleEqualityW27": "♀️",
+        "gayEqualityW27": "🏳️‍🌈",
+    }
+    for var, text in equality_issues.items():
+        if var in row and row[var] != 99:
+            response = row[var]
+            if response <= 2:
+                policies.append(
+                    f"{equality_emojis[var]} {text} have not gone far enough."
+                )
+            elif response == 3:
+                policies.append(f"{equality_emojis[var]} {text} are about right.")
+            elif response >= 4:
+                policies.append(f"{equality_emojis[var]} {text} have gone too far.")
+
+    # Zero-Hour Contracts
+    if "zeroHourContractW27" in row:
+        value = row["zeroHourContractW27"]
+        if value == 1:
+            policies.append("🚫 Zero-hours contracts should definitely be illegal.")
+        elif value == 2:
+            policies.append("❌ Zero-hours contracts should probably be illegal.")
+        elif value == 3:
+            policies.append("✅ Zero-hours contracts should probably be legal.")
+        elif value == 4:
+            policies.append("💯 Zero-hours contracts should definitely be legal.")
+
+    # Welfare Preference
+    if "welfarePreferenceW27" in row and row["welfarePreferenceW27"] != 99:
+        value = row["welfarePreferenceW27"]
+        if value <= 2:
+            policies.append("📈 Welfare benefits are too high.")
+        elif value == 3:
+            policies.append("💰 Welfare benefits are about right.")
+        elif value >= 4:
+            policies.append("📉 Welfare benefits are too low.")
+
+    # Preference for Change
+    if "radicalW27" in row and row["radicalW27"] != 99:
+        agreement = row["radicalW27"]
+        if agreement >= 4:
+            policies.append("🔄 We need to fundamentally change how society works.")
+        elif agreement <= 2:
+            policies.append("👌 No need for fundamental changes to society.")
+
+    if "harkBackW27" in row and row["harkBackW27"] != 99:
+        agreement = row["harkBackW27"]
+        if agreement >= 4:
+            policies.append("🏰 Things were better in the past.")
+        elif agreement <= 2:
+            policies.append("🚀 The present is better than the past.")
+
+    # Immigration Levels
+    if "immigSelfW29" in row and row["immigSelfW29"] != 99:
+        position = row["immigSelfW29"]
+        if position >= 7:
+            policies.append("🌏 The UK should allow many more immigrants.")
+        elif position <= 3:
+            policies.append("🚫 The UK should allow many fewer immigrants.")
+        else:
+            policies.append("⚖️ The UK's current immigration levels are about right.")
+
+    # Israel-Palestine Conflict
+    if "israelPalestineW28" in row and row["israelPalestineW28"] != 99:
+        stance = row["israelPalestineW28"]
+        if stance == 1:
+            policies.append("🇮🇱 I sympathise much more with the Israeli side.")
+        elif stance == 2:
+            policies.append("🇮🇱 I sympathise a little more with the Israeli side.")
+        elif stance == 3:
+            policies.append(
+                "🤝 I sympathise equally with both sides, Israeli and Palestinian."
+            )
+        elif stance == 4:
+            policies.append("🇵🇸 I sympathise a little more with the Palestinian side.")
+        elif stance == 5:
+            policies.append("🇵🇸 I sympathise much more with the Palestinian side.")
+
+    # General Trust
+    if "genTrustW27" in row and row["genTrustW27"] != 99:
+        trust = row["genTrustW27"]
+        if trust == 1:
+            policies.append("😊 Most people can be trusted.")
+        elif trust == 2:
+            policies.append("🤨 You can't be too careful dealing with people.")
 
     # Values1 ('lr1' to 'lr5')
     values1_questions = [
@@ -405,7 +544,7 @@ def generate_policies(row):
             elif agreement == 1:
                 policies.append(f"🚫 Strongly disagree: {values2_texts[question]}")
 
-    # Culture Wars ('cwLanguage', 'cwStatues', 'cwTraining', 'cwAuthors', 'cwTrans', 'cwParents')
+    # Culture Wars
     culture_wars_questions = [
         "cwLanguageW26W27",
         "cwStatuesW26W27",
@@ -445,6 +584,22 @@ def generate_policies(row):
             policies.append("🤝 I'd vote No to stay in the UK.")
         elif vote == 2:
             policies.append("🗳️ I wouldn't vote in the Scottish referendum.")
+
+    # British Pride
+    if "britishPrideW27" in row and row["britishPrideW27"] != 99:
+        agreement = row["britishPrideW27"]
+        if agreement == 5:
+            policies.append("🇬🇧 I strongly feel proud to be British.")
+        elif agreement == 4:
+            policies.append("🇬🇧 I feel proud to be British.")
+        elif agreement == 3:
+            policies.append(
+                "🤔 I neither agree nor disagree about feeling proud to be British."
+            )
+        elif agreement == 2:
+            policies.append("🙁 I don't feel proud to be British.")
+        elif agreement == 1:
+            policies.append("😞 I strongly don't feel proud to be British.")
 
     return policies
 
