@@ -45,7 +45,7 @@ def generate_tweet(row, selected_indices):
     eu_referendum_vote = get_eu_referendum_vote(row.get("euRefVoteW9"))
     eu_referendum_intention = get_eu_referendum_intention(row.get("euRefVoteAfterW29"))
 
-    if not gender or not voting_intention:
+    if not gender or not voting_intention or not constituency:
         return None
 
     # Handle optional fields
