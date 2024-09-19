@@ -12,13 +12,13 @@ def post_single_tweet():
         current_position = 0
 
     # Read all tweets
-    with open("Britain/tweets/tweets.txt", "r", encoding="utf-8") as f:
+    with open("Britain/tweets/random_tweets.txt", "r", encoding="utf-8") as f:
         tweets = f.read().split("\n\n\n")
 
     # Find the next valid tweet with an image
     while current_position < len(tweets):
         tweet = tweets[current_position].strip()
-        image_path = f"Britain/images/tweet_{current_position}.png"
+        image_path = f"Britain/random_images/tweet_{current_position}.png"
 
         if tweet and os.path.exists(image_path):
             post_to_bluesky(tweet, image_path)
