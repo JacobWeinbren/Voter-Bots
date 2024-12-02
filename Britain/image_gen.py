@@ -45,10 +45,11 @@ def generate_chat_bubble(tweet):
             return None
 
         content_box = page.query_selector("body > div").bounding_box()
+        max_dimension = max(int(content_box["width"]), int(content_box["height"])) + 40
         page.set_viewport_size(
             {
-                "width": int(content_box["width"]) + 40,
-                "height": int(content_box["height"]) + 40,
+                "width": max_dimension,
+                "height": max_dimension,
             }
         )
 
