@@ -1,8 +1,8 @@
 name: Schedule Britain Posts
 
 on:
-    schedule:
-        - cron: "0 8,12,17 * * *"
+    #schedule:
+    #    - cron: "0 8,12,17 * * *"
     workflow_dispatch:
 
 jobs:
