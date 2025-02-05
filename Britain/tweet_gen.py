@@ -55,7 +55,6 @@ def generate_tweet(row, selected_indices):
     # Handle optional fields
     ethnicity_str = f"{ethnicity} " if ethnicity else ""
     religion_str = f"{religion} " if religion else ""
-    education_str = f", with {education}" if education else ""
 
     # Build tweet sections
     tweet = ""
@@ -81,7 +80,7 @@ def generate_tweet(row, selected_indices):
     if working_status:
         class_info.append(working_status)
     elif social_grade:
-        class_info.append(f"💼 Social Grade: {social_grade}")
+        class_info.append(f"My social grade is {social_grade}")
     if class_info:
         tweet = add_section(tweet, ". ".join(class_info))
 

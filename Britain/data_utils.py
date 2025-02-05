@@ -461,6 +461,7 @@ def generate_policies(row):
     nationalization_items = {
         "renationaliseRailW26": "train services",
         "nationalizeHospitalsW26": "hospitals",
+        # "nationalizeUtilitiesW26": "utilities",
         "nationalizeSchoolsW26": "schools",
     }
 
@@ -468,11 +469,11 @@ def generate_policies(row):
         val = row.get(var, 99)
         if val != 99:
             response = {
-                5: f"💯 Strongly agree: Public ownership of {statement}",
-                4: f"👍 Agree: Public ownership of  {statement}",
-                3: f"😐 Neutral: Public ownership of  {statement}",
-                2: f"👎 Disagree: Public ownership of {statement}",
-                1: f"🚫 Strongly disagree: Public ownership of {statement}",
+                1: f"💯 Strongly agree: Public ownership of {statement}",
+                2: f"👍 Agree: Public ownership of {statement}",
+                3: f"⚖️ Mixed: Public / Private ownership of {statement}",
+                4: f"👎 Agree: Private ownership of {statement}",
+                5: f"💯 Strongly agree: Private ownership of {statement}",
             }.get(val, "")
             if response:
                 policies.append(response)
@@ -509,33 +510,12 @@ def generate_policies(row):
         }
         policies.append(global_map.get(row["globalGoodOverallW21"], ""))
 
-    # Current Policy Debates
-    policy_issues = {
-        "votesAt16W28": ("🗳️", "Lower voting age to 16"),
-        "banSmokeW27": ("🚭", "Generational smoking prohibition"),
-        "rwandaFlightsW27": ("🇷🇼", "Sending asylum seekers to Rwanda"),
-        "militaryServiceW28": ("🎖️", "Compulsory youth service"),
-    }
-
-    for var, (emoji, statement) in policy_issues.items():
-        val = row.get(var, 99)
-        if val != 99:
-            response = {
-                5: f"💯 Strongly agree: {statement}",
-                4: f"👍 Agree: {statement}",
-                3: f"😐 Neutral: {statement}",
-                2: f"👎 Disagree: {statement}",
-                1: f"🚫 Strongly disagree: {statement}",
-            }.get(val, "")
-            if response:
-                policies.append(response)
-
     # Change Preferences - W27
     change_preferences = {
         "radicalW27": ("🔄", "We need to fundamentally change how society works"),
         "harkBackW27": ("🕰️", "Things in Britain were better in the past"),
     }
-    for var, statement in change_preferences.items():
+    for var, (emoji, statement) in change_preferences.items():
         val = row.get(var, 99)
         if val != 99:
             response = {
@@ -659,30 +639,30 @@ def generate_policies(row):
         pride_map = {
             5: "💯 Strongly agree: I feel proud to be British",
             4: "👍 Agree: I feel proud to be British",
-            3: "😐 Neutral: About pride in being British",
-            2: "👎 Disagree: With feeling proud to be British",
-            1: "🚫 Strongly disagree: With British pride",
+            3: "😐 Neutral: I feel proud to be British",
+            2: "👎 Disagree: I feel proud to be British",
+            1: "🚫 Strongly disagree: I feel proud to be British",
         }
         policies.append(pride_map.get(row["britishPrideW27"], ""))
 
     # Deficit Reduction - W27
     if "deficitReduceW27" in row and row["deficitReduceW27"] != 99:
         deficit_map = {
-            4: "⚠️ Completely necessary to eliminate deficit",
-            3: "💭 Important but not essential to reduce deficit",
-            2: "💫 Desirable but not needed to cut deficit",
-            1: "✅ No need to address deficit",
+            4: "🚨 Completely necessary to eliminate deficit",
+            3: "⚠️ Important but not essential to eliminate deficit",
+            2: "✨ It is desirable but not required to eliminate deficit",
+            1: "🟢 No need to eliminate deficit at all",
         }
         policies.append(deficit_map.get(row["deficitReduceW27"], ""))
 
     # Monarchy Support - W25
     if "monarchW25" in row and row["monarchW25"] != 99:
         monarch_map = {
-            5: "💯 Strongly support: maintaining the monarchy",
-            4: "👍 Support: the British monarchy",
-            3: "😐 Neutral: on monarchy continuation",
-            2: "👎 Oppose: the monarchy",
-            1: "🚫 Strongly oppose: having a monarchy",
+            5: "💯 Strongly support: Keeping the monarchy",
+            4: "👍 Support: Keeping the monarchy",
+            3: "😐 Neutral: Keeping the monarchy",
+            2: "👎 Oppose: Keeping the monarchy",
+            1: "🚫 Strongly oppose: Keeping the monarchy",
         }
         policies.append(monarch_map.get(row["monarchW25"], ""))
 
@@ -734,14 +714,30 @@ def generate_policies(row):
             elif val in [4, 5]:
                 policies.append(f"{emoji} {text} gone too far")
 
+    # Public vs Private Efficiency - W26
+    if "pubPrivEfficientW26" in row and row["pubPrivEfficientW26"] not in [99, None]:
+        efficiency_value = row["pubPrivEfficientW26"]
+        if efficiency_value <= 3:
+            policies.append(
+                "🏭 The private sector offers better value for domestic utilities"
+            )
+        elif 4 <= efficiency_value <= 6:
+            policies.append(
+                "⚖️ Mixed on private vs public sector efficiency for utilities"
+            )
+        elif 7 <= efficiency_value <= 10:
+            policies.append(
+                "🏛️ The public sector provides better value for domestic utilities"
+            )
+
     # Defense Spending - W25
     if "natSecuritySpendingW25" in row and row["natSecuritySpendingW25"] != 99:
         defense_map = {
             5: "🛡️ Strongly support increased defense spending",
-            4: "⚔️ Support more defense spending",
+            4: "🛡️ Support increased defense spending",
             3: "⚖️ Keep defense spending the same",
             2: "🕊️ Support reduced defense spending",
-            1: "✌️ Strongly advocate defense spending cuts",
+            1: "🕊️ Strongly support defense spending cuts",
         }
         policies.append(defense_map.get(row["natSecuritySpendingW25"], ""))
 
@@ -778,22 +774,22 @@ def generate_policies(row):
     # Rail Nationalization - W26
     if "renationaliseRailW26" in row and row["renationaliseRailW26"] != 99:
         rail_map = {
-            1: "🚫 Strongly oppose: rail nationalisation",
-            2: "👎 Disagree: rail nationalisation",
-            3: "😐 Neutral: rail nationalisation",
-            4: "👍 Agree: rail nationalisation",
-            5: "💯 Strongly agree: rail nationalisation",
+            1: "🚫 Strongly oppose: Rail nationalisation",
+            2: "👎 Disagree: Rail nationalisation",
+            3: "😐 Neutral: Rail nationalisation",
+            4: "👍 Agree: Rail nationalisation",
+            5: "💯 Strongly agree: Rail nationalisation",
         }
         policies.append(rail_map.get(row["renationaliseRailW26"], ""))
 
     # Overseas Aid Policy - W27
     if "overseasAidW27" in row and row["overseasAidW27"] != 99:
         aid_map = {
-            1: "🚫 Strongly disagree: ending foreign aid",
-            2: "👎 Disagree: ending foreign aid",
-            3: "😐 Neutral: ending foreign aid spending",
-            4: "👍 Agree: ending foreign aid",
-            5: "💯 Strongly agree: ending foreign aid",
+            1: "🚫 Strongly disagree: Ending foreign aid",
+            2: "👎 Disagree: Ending foreign aid",
+            3: "😐 Neutral: Ending foreign aid",
+            4: "👍 Agree: Ending foreign aid",
+            5: "💯 Strongly agree: Ending foreign aid",
         }
         policies.append(aid_map.get(row["overseasAidW27"], ""))
 
@@ -806,6 +802,8 @@ def generate_policies(row):
         "militaryServiceW28": ("🎖️", "Compulsory youth service"),
         "inheritanceTaxW28": ("💰", "Abolish inheritance tax"),
         "breakfastClubW28": ("🍳", "Free school breakfast clubs"),
+        "banSmokeW27": ("🚭", "Generational smoking prohibition"),
+        "govtEnergyW27": ("⚡", "Create government-owned renewable energy company"),
     }
 
     for var, (emoji, desc) in policy_support.items():
@@ -870,12 +868,12 @@ def get_eu_referendum_vote(code):
 
 def get_social_grade(soc_grade_code):
     social_grade_map = {
-        1: "Higher managerial/professional (A)",
-        2: "Intermediate managerial/professional (B)",
-        3: "Supervisory/clerical (C1)",
-        4: "Skilled manual workers (C2)",
-        5: "Semi/unskilled manual workers (D)",
-        6: "Lowest grade (E)",
+        1: "🅰 higher managerial/professional.",
+        2: "🅱 intermediate managerial/professional.",
+        3: "🅲 supervisory/clerical.",
+        4: "🅲 skilled manual worker.",
+        5: "🅳 semi/unskilled manual worker.",
+        6: "🅴 lowest grade worker.",
     }
     return social_grade_map.get(soc_grade_code) if pd.notna(soc_grade_code) else None
 
