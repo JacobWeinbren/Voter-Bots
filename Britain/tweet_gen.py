@@ -1,6 +1,5 @@
 import pandas as pd
 import random
-import numpy as np
 from data_utils import (
     get_gender,
     get_education_group,
@@ -18,6 +17,8 @@ from data_utils import (
     get_eu_referendum_intention,
     get_eu_referendum_vote,
     get_past_vote,
+    get_ns_sec,
+    get_working_status,
 )
 
 
@@ -45,6 +46,9 @@ def generate_tweet(row, selected_indices):
     eu_referendum_vote = get_eu_referendum_vote(row.get("euRefVoteW9"))
     eu_referendum_intention = get_eu_referendum_intention(row.get("euRefVoteAfterW29"))
 
+    occupation = get_ns_sec(row["ns_sec_analyticW26W27W29"])
+    working_status = get_working_status(row["workingStatusW26W27W29"])
+
     if not gender or not voting_intention or not constituency:
         return None
 
@@ -53,48 +57,89 @@ def generate_tweet(row, selected_indices):
     religion_str = f"{religion} " if religion else ""
     education_str = f", with {education}" if education else ""
 
-    tweet = f"👤 I'm a {ethnicity_str}{religion_str}{gender}"
+    # Build tweet sections
+    tweet = ""
+
+    # 1. Personal Description
+    personal_desc = f"👤 I'm a {ethnicity_str}{religion_str}{gender}"
     if constituency and country_emoji:
-        tweet += f" from {constituency} {country_emoji}"
+        personal_desc += f" from {constituency} {country_emoji}"
     if age:
-        tweet += f", aged {age}"
-    tweet += f"{education_str}."
+        personal_desc += f", aged {age}"
+    if education:
+        personal_desc += f", with {education}"
+    # Ensure it ends with a period
+    personal_desc = personal_desc.strip()
+    if not personal_desc.endswith("."):
+        personal_desc += "."
+    tweet = add_section(tweet, personal_desc, False)
+
+    # 2. Household/Work Status (Class)
+    class_info = []
     if home_ownership:
-        tweet += f" 🏠 {home_ownership}."
-    tweet += "\n\n"
+        class_info.append(f"🏠 {home_ownership}")
+    if working_status:
+        class_info.append(working_status)
+    elif occupation:
+        class_info.append(f"💼 I am {occupation}")
+    if class_info:
+        tweet = add_section(tweet, ". ".join(class_info))
 
+    # 3. Top Issue
     if top_issue:
-        tweet += f"{top_issue} {verb} my top issue.\n\n"
+        tweet = add_section(tweet, f"{top_issue} {verb} my top issue.")
 
-    if economic_lean and social_lean:
-        tweet += f"🤔 I am {economic_lean} and {social_lean}.\n\n"
+    # 4. Political Leans
+    lean_parts = []
+    if economic_lean:
+        lean_parts.append(f"economically {economic_lean}")
+    if social_lean:
+        lean_parts.append(f"socially {social_lean}")
 
-    if preferred_party and preferred_party != voting_intention:
-        tweet += f"🗳️ I wanted to vote {preferred_party}, but I tactically voted {voting_intention} in 2024."
-    else:
-        tweet += f"🗳️ I voted {voting_intention} in 2024."
+    if lean_parts:
+        lean_sentence = "🤔 I am " + " and ".join(lean_parts) + "."
+        tweet = add_section(tweet, lean_sentence)
 
+    # 5. Voting (Election)
+    vote_text = f"🗳️ I voted {voting_intention} in 2024"
     if past_vote:
-        tweet += f" In 2019, I voted {past_vote}."
+        vote_text += f". In 2019, I voted {past_vote}"
+    if preferred_party and preferred_party != voting_intention:
+        vote_text = f"🗳️ I wanted to vote {preferred_party}, but tactically voted {voting_intention} in 2024"
 
-    tweet += "\n\n"
+    # Ensure voting section ends with period
+    if not vote_text.endswith("."):
+        vote_text += "."
+    tweet = add_section(tweet, vote_text)
 
-    if eu_referendum_vote or eu_referendum_intention:
-        if eu_referendum_vote and eu_referendum_intention:
-            tweet += f"{eu_referendum_vote} and {eu_referendum_intention}.\n\n"
-        elif eu_referendum_vote:
-            tweet += f"{eu_referendum_vote}.\n\n"
-        elif eu_referendum_intention:
-            tweet += f"{eu_referendum_intention}.\n\n"
+    # 6. Voting (Ref)
+    eu_text = " ".join(filter(None, [eu_referendum_vote, eu_referendum_intention]))
+    if eu_text:
+        tweet = add_section(tweet, eu_text)
 
+    # 7. Policies
     policies = generate_policies(row)
-    if len(policies) > 3:
-        policies = random.sample(policies, 3)
     if policies:
-        tweet += "Some opinions I hold:\n"
-        for i, policy in enumerate(policies):
-            tweet += f"• {policy}"
-            if i < len(policies) - 1:
-                tweet += "\n"
+        # Shuffle and select up to 3 random policies
+        random.shuffle(policies)
+        # Ensure each policy ends with a period
+        cleaned_policies = []
+        for p in policies[:3]:
+            p = p.strip()
+            if not p.endswith("."):
+                p += "."
+            cleaned_policies.append(p)
+        policy_text = "Some opinions I hold:\n" + "\n".join(
+            [f"• {p}" for p in cleaned_policies]
+        )
+        tweet = add_section(tweet, policy_text)
 
+    return tweet
+
+
+def add_section(tweet, content, section_separator=True):
+    if content:
+        if tweet:  # Only add separator if tweet isn't empty
+            tweet += "\n\n" if section_separator else " "
+        tweet += content
     return tweet
