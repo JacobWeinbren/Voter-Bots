@@ -17,7 +17,7 @@ from data_utils import (
     get_eu_referendum_intention,
     get_eu_referendum_vote,
     get_past_vote,
-    get_ns_sec,
+    get_social_grade,
     get_working_status,
 )
 
@@ -46,7 +46,7 @@ def generate_tweet(row, selected_indices):
     eu_referendum_vote = get_eu_referendum_vote(row.get("euRefVoteW9"))
     eu_referendum_intention = get_eu_referendum_intention(row.get("euRefVoteAfterW29"))
 
-    occupation = get_ns_sec(row["ns_sec_analyticW26W27W29"])
+    social_grade = get_social_grade(row["p_socgradeW29"])
     working_status = get_working_status(row["workingStatusW26W27W29"])
 
     if not gender or not voting_intention or not constituency:
@@ -80,8 +80,8 @@ def generate_tweet(row, selected_indices):
         class_info.append(f"🏠 {home_ownership}")
     if working_status:
         class_info.append(working_status)
-    elif occupation:
-        class_info.append(f"💼 I am {occupation}")
+    elif social_grade:
+        class_info.append(f"💼 Social Grade: {social_grade}")
     if class_info:
         tweet = add_section(tweet, ". ".join(class_info))
 
@@ -92,9 +92,9 @@ def generate_tweet(row, selected_indices):
     # 4. Political Leans
     lean_parts = []
     if economic_lean:
-        lean_parts.append(f"economically {economic_lean}")
+        lean_parts.append(f"{economic_lean}")
     if social_lean:
-        lean_parts.append(f"socially {social_lean}")
+        lean_parts.append(f"{social_lean}")
 
     if lean_parts:
         lean_sentence = "🤔 I am " + " and ".join(lean_parts) + "."

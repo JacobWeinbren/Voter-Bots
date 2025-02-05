@@ -76,7 +76,7 @@ def get_economic_lean(lr_scale):
     elif 2 < lr_scale <= 4:
         return "moderately economically left-wing ⬅️"
     elif 4 < lr_scale <= 6:
-        return "economically centrist ⚖️"
+        return "economically moderate ⚖️"
     elif 6 < lr_scale <= 8:
         return "moderately economically right-wing ➡️"
     elif 8 < lr_scale <= 10:
@@ -99,7 +99,7 @@ def get_social_lean(al_scale):
     elif 2 < al_scale <= 4:
         return "moderately socially liberal 🕊️"
     elif 4 < al_scale <= 6:
-        return "socially centrist ⚖️"
+        return "socially moderate ⚖️"
     elif 6 < al_scale <= 8:
         return "moderately socially authoritarian 🔒"
     elif 8 < al_scale <= 10:
@@ -317,540 +317,530 @@ def get_past_vote(row):
 def generate_policies(row):
     policies = []
 
-    # Add democracy satisfaction
+    # Democracy Satisfaction - W29
     if "satDemUKW29" in row and row["satDemUKW29"] != 99:
-        democracy_satisfaction = get_democracy_satisfaction(row["satDemUKW29"])
-        if democracy_satisfaction:
-            policies.append(democracy_satisfaction)
+        satisfaction_map = {
+            1: "😠 Very dissatisfied with how democracy works in the UK",
+            2: "😕 Somewhat dissatisfied with UK democracy",
+            3: "🙂 Fairly satisfied with the way democracy works in Britain",
+            4: "😊 Very satisfied with British democracy",
+        }
+        policies.append(satisfaction_map.get(row["satDemUKW29"], ""))
 
-    # PR Preference
+    # Electoral System Preference - W29
     if "prPreferenceW29" in row and row["prPreferenceW29"] != 99:
-        preference = row["prPreferenceW29"]
-        if preference == 1:
-            policies.append("🏛️ One party should have a majority to govern alone.")
-        elif preference == 2:
-            policies.append("🗳️ Seats in parliament should match vote percentages.")
+        policies.append(
+            "🗳️ Believe seats should match vote percentages (proportional representation)"
+            if row["prPreferenceW29"] == 2
+            else "🏛️ Prefer one party having majority to govern alone"
+        )
 
-    # EU Integration Grid
+    # EU Integration Position - W29
     if "EUIntegrationSelfW29" in row and row["EUIntegrationSelfW29"] != 99:
         position = row["EUIntegrationSelfW29"]
         if position >= 7:
-            policies.append("🇬🇧 Britain should protect its independence from the EU.")
+            policies.append("🇬🇧 Strongly believe EU unification has gone too far")
         elif position <= 3:
-            policies.append("🇪🇺 Britain should unite more with the EU.")
+            policies.append("🇪🇺 Strongly support pushing European unification further")
         else:
-            policies.append("🤝 Britain should find a middle ground with the EU.")
+            policies.append("🤝 Mixed view on European integration")
 
-    # Redistribution
+    # Income Equality - W29
     if "redistSelfW29" in row and row["redistSelfW29"] != 99:
         stance = row["redistSelfW29"]
-        if stance >= 7:
+        if stance <= 3:
             policies.append(
-                "🤷 Government should be less concerned about equal incomes."
+                "🟰 Strongly support government efforts to make incomes more equal"
             )
-        elif stance <= 3:
-            policies.append("🟰 Government should make incomes more equal.")
+        elif stance <= 6:
+            policies.append("⚖️ Somewhat support income equality efforts")
         else:
-            policies.append("⚖️ Income equality requires a balanced approach.")
+            policies.append(
+                "🤷 Believe government should be less concerned about income equality"
+            )
 
-    # Environmental Protection vs Economic Growth
+    # Environment vs Economy - W28
     if "enviroGrowthW28" in row and row["enviroGrowthW28"] != 99:
         value = row["enviroGrowthW28"]
-        if value >= 7:
+        if value >= 5:
             policies.append(
-                "🌳 Protecting the environment should have priority over economic growth."
+                "🌳 Strongly prioritise environmental protection over economic growth"
             )
         elif value <= 3:
             policies.append(
-                "💰 Economic growth should have priority over environmental protection."
+                "💰 Believe economic growth should take priority over environment"
             )
         else:
-            policies.append("⚖️ We need a balance between the environment and growth.")
-
-    # Immigration Impact (Economy and Culture)
-    econ_value = row.get("immigEconW27")
-    cultural_value = row.get("immigCulturalW27")
-
-    if econ_value not in [9999, None] and cultural_value not in [9999, None]:
-        avg_value = (econ_value + cultural_value) / 2
-        if avg_value >= 5:
             policies.append(
-                "🌍 Immigration is beneficial for Britain's economy and culture."
+                "⚖️ Seek balance between environmental protection and economic growth"
             )
-        elif avg_value <= 3:
-            policies.append(
-                "🚫 Immigration has negative effects on Britain's economy and culture."
-            )
-        else:
-            policies.append("⚖️ Immigration has mixed or neutral impacts on Britain.")
-    elif econ_value not in [9999, None]:
-        if econ_value >= 5:
-            policies.append("💼 Immigration is good for Britain's economy.")
-        elif econ_value <= 3:
-            policies.append("📉 Immigration is bad for Britain's economy.")
-        else:
-            policies.append("⚖️ Immigration has a neutral impact on the economy.")
-    elif cultural_value not in [9999, None]:
-        if cultural_value >= 5:
-            policies.append("🎨 Immigration enriches Britain's cultural life.")
-        elif cultural_value <= 3:
-            policies.append("📉 Immigration undermines Britain's cultural life.")
-        else:
-            policies.append("⚖️ Immigration neither enriches nor undermines culture.")
 
-    # Equality Efforts
+    # Immigration Impact - W27
+    econ = row.get("immigEconW27", 9999)
+    cultural = row.get("immigCulturalW27", 9999)
+    if econ != 9999 and cultural != 9999:
+        avg = (econ + cultural) / 2
+        if avg >= 5:
+            policies.append("🌍 Believe immigration benefits both economy and culture")
+        elif avg <= 3:
+            policies.append(
+                "🚫 Think immigration negatively impacts economy and culture"
+            )
+        else:
+            policies.append("⚖️ Neutral on immigration's economic and cultural impacts")
+
+    # Equality Efforts - W27
     equality_issues = {
-        "blackEqualityW27": "Attempts to give equal opportunities to ethnic minorities",
-        "femaleEqualityW27": "Attempts to give equal opportunities to women",
-        "gayEqualityW27": "Attempts to give equal opportunities to gays and lesbians",
+        "blackEqualityW27": (
+            "🤝",
+            "Attempts to give equal opportunities to ethnic minorities have",
+        ),
+        "femaleEqualityW27": (
+            "♀️",
+            "Efforts for women's equal opportunities have",
+        ),
+        "gayEqualityW27": (
+            "🏳️‍🌈",
+            "Initiatives for gay and lesbian equality have",
+        ),
     }
-    equality_emojis = {
-        "blackEqualityW27": "🤝",
-        "femaleEqualityW27": "♀️",
-        "gayEqualityW27": "🏳️‍🌈",
+
+    for var, (emoji, text) in equality_issues.items():
+        val = row.get(var, 99)
+        if val != 99:
+            if val <= 2:
+                policies.append(f"{emoji} {text} not gone far enough")
+            elif val == 3:
+                policies.append(f"{emoji} {text} been about right")
+            elif val >= 4:
+                policies.append(f"{emoji} {text} gone too far")
+
+    # Perceptions of Poverty - W20
+    poverty_perceptions = {
+        "reasonForUnemploymentW20": "When someone is unemployed, it's usually through no fault of their own",
+        "immigrantsWelfareStateW20": "Immigrants are a burden on the welfare state",
+        "govtHandoutsW20": "Too many people rely on government handouts",
+        "benefitsNotDeservedW20": "Many people who get benefits don't really deserve help",
     }
-    for var, text in equality_issues.items():
-        if var in row and row[var] != 99:
-            response = row[var]
-            if response <= 2:
-                policies.append(
-                    f"{equality_emojis[var]} {text} have not gone far enough."
-                )
-            elif response == 3:
-                policies.append(f"{equality_emojis[var]} {text} are about right.")
-            elif response >= 4:
-                policies.append(f"{equality_emojis[var]} {text} have gone too far.")
 
-    # Zero-Hour Contracts
-    if "zeroHourContractW27" in row:
-        value = row["zeroHourContractW27"]
-        if value == 1:
-            policies.append("🚫 Zero-hours contracts should definitely be illegal.")
-        elif value == 2:
-            policies.append("❌ Zero-hours contracts should probably be illegal.")
-        elif value == 3:
-            policies.append("✅ Zero-hours contracts should probably be legal.")
-        elif value == 4:
-            policies.append("💯 Zero-hours contracts should definitely be legal.")
+    for var, statement in poverty_perceptions.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    # Welfare Preference
+    # Zero-hour Contracts - W27
+    if "zeroHourContractW27" in row and row["zeroHourContractW27"] != 99:
+        contract_map = {
+            1: "🚫 Strongly believe zero-hours contracts should be illegal",
+            2: "❌ Think zero-hours contracts should probably be illegal",
+            3: "✅ Believe zero-hours contracts should probably remain legal",
+            4: "💯 Strongly support keeping zero-hours contracts legal",
+        }
+        policies.append(contract_map.get(row["zeroHourContractW27"], ""))
+
+    # Welfare Benefits - W27
     if "welfarePreferenceW27" in row and row["welfarePreferenceW27"] != 99:
-        value = row["welfarePreferenceW27"]
-        if value <= 2:
-            policies.append("📈 Welfare benefits are too high.")
-        elif value == 3:
-            policies.append("💰 Welfare benefits are about right.")
-        elif value >= 4:
-            policies.append("📉 Welfare benefits are too low.")
+        welfare_map = {
+            1: "📉 Strongly believe welfare benefits are too high",
+            2: "↘️ Think welfare benefits are somewhat too high",
+            3: "💰 Feel current benefit levels are about right",
+            4: "↗️ Believe welfare benefits are too low",
+            5: "📈 Strongly argue benefits should be increased",
+        }
+        policies.append(welfare_map.get(row["welfarePreferenceW27"], ""))
 
-    # Preference for Change
-    if "radicalW27" in row and row["radicalW27"] != 99:
-        agreement = row["radicalW27"]
-        if agreement >= 4:
-            policies.append("🔄 We need to fundamentally change how society works.")
-        elif agreement <= 2:
-            policies.append("👌 No need for fundamental changes to society.")
+    # Nationalization Policies - W26
+    nationalization_items = {
+        "renationaliseRailW26": "train services",
+        "nationalizeHospitalsW26": "hospitals",
+        "nationalizeSchoolsW26": "schools",
+    }
 
-    if "harkBackW27" in row and row["harkBackW27"] != 99:
-        agreement = row["harkBackW27"]
-        if agreement >= 4:
-            policies.append("🏰 Things were better in the past.")
-        elif agreement <= 2:
-            policies.append("🚀 The present is better than the past.")
+    for var, statement in nationalization_items.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: Public ownership of {statement}",
+                4: f"👍 Agree: Public ownership of  {statement}",
+                3: f"😐 Neutral: Public ownership of  {statement}",
+                2: f"👎 Disagree: Public ownership of {statement}",
+                1: f"🚫 Strongly disagree: Public ownership of {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    # Immigration Levels
+    # Welsh Devolution Preferences - W27
+    if "devoPrefWalesW27" in row and row["devoPrefWalesW27"] != 99:
+        devo_map = {
+            1: "🇬🇧 No devolved government in Wales",
+            2: "🇬🇧 Reduce Welsh Parliament powers",
+            3: "⚖️ Maintain current Welsh devolution settlement",
+            4: "🏴󠁧󠁢󠁷󠁬󠁳󠁿 Expand Welsh Parliament powers",
+            5: "🏴󠁧󠁢󠁷󠁬󠁳󠁿 Support Welsh independence from UK",
+        }
+        policies.append(devo_map.get(row["devoPrefWalesW27"], ""))
+
+    # Tax and Spending - W28
+    if "taxSpendSelfW28" in row and row["taxSpendSelfW28"] != 99:
+        value = row["taxSpendSelfW28"]
+        if value <= 3:
+            policies.append("⬇️ Favour significant tax cuts and reduced social spending")
+        elif 4 <= value <= 6:
+            policies.append("⚖️ Support maintaining current tax and spending levels")
+        else:
+            policies.append("⬆️ Advocate higher taxes for expanded social services")
+
+    # Globalization View - W21
+    if "globalGoodOverallW21" in row and row["globalGoodOverallW21"] != 99:
+        global_map = {
+            1: "👎 Strongly negative view of globalisation",
+            2: "↘️ Mostly negative view of globalisation",
+            3: "⚖️ Neutral perspective on globalisation",
+            4: "↗️ Mostly positive view of globalisation",
+            5: "👍 Strongly positive view of globalisation",
+        }
+        policies.append(global_map.get(row["globalGoodOverallW21"], ""))
+
+    # Current Policy Debates
+    policy_issues = {
+        "votesAt16W28": ("🗳️", "Lower voting age to 16"),
+        "banSmokeW27": ("🚭", "Generational smoking prohibition"),
+        "rwandaFlightsW27": ("🇷🇼", "Sending asylum seekers to Rwanda"),
+        "militaryServiceW28": ("🎖️", "Compulsory youth service"),
+    }
+
+    for var, (emoji, statement) in policy_issues.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
+
+    # Change Preferences - W27
+    change_preferences = {
+        "radicalW27": ("🔄", "We need to fundamentally change how society works"),
+        "harkBackW27": ("🕰️", "Things in Britain were better in the past"),
+    }
+    for var, statement in change_preferences.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
+
+    # Immigration Levels - W29
     if "immigSelfW29" in row and row["immigSelfW29"] != 99:
         position = row["immigSelfW29"]
         if position >= 7:
-            policies.append("🌏 The UK should allow many more immigrants.")
+            policies.append("🌍 Support allowing many more immigrants to the UK")
         elif position <= 3:
-            policies.append("🚫 The UK should allow many fewer immigrants.")
+            policies.append("🚫 Believe UK should allow many fewer immigrants")
         else:
-            policies.append("⚖️ The UK's current immigration levels are about right.")
+            policies.append("⚖️ Satisfied with current immigration levels")
 
-    # Israel-Palestine Conflict
+    # Israel-Palestine Conflict - W28
     if "israelPalestineW28" in row and row["israelPalestineW28"] != 99:
         stance = row["israelPalestineW28"]
-        if stance == 1:
-            policies.append("🇮🇱 I sympathise much more with the Israeli side.")
-        elif stance == 2:
-            policies.append("🇮🇱 I sympathise a little more with the Israeli side.")
-        elif stance == 3:
-            policies.append(
-                "🤝 I sympathise equally with both sides, Israeli and Palestinian."
-            )
-        elif stance == 4:
-            policies.append("🇵🇸 I sympathise a little more with the Palestinian side.")
-        elif stance == 5:
-            policies.append("🇵🇸 I sympathise much more with the Palestinian side.")
+        stance_map = {
+            1: "🇮🇱 Strongly sympathise with Israel",
+            2: "🇮🇱 Lean toward Israel",
+            3: "🤝 Neutral on Israeli-Palestinian conflict",
+            4: "🇵🇸 Lean toward Palestine",
+            5: "🇵🇸 Strongly sympathise with Palestine",
+        }
+        policies.append(stance_map.get(stance, ""))
 
-    # General Trust
-    if "genTrustW27" in row and row["genTrustW27"] != 99:
-        trust = row["genTrustW27"]
-        if trust == 1:
-            policies.append("😊 Most people can be trusted.")
-        elif trust == 2:
-            policies.append("🤨 You can't be too careful dealing with people.")
-
-    # Values1 ('lr1' to 'lr5')
-    values1_questions = [
-        "lr1W27W29",
-        "lr2W27W29",
-        "lr3W27W29",
-        "lr4W27W29",
-        "lr5W27W29",
-    ]
-    values1_texts = {
-        "lr1W27W29": "Government should redistribute income from the better off to those who are less well off.",
-        "lr2W27W29": "Big business takes advantage of ordinary people.",
-        "lr3W27W29": "Ordinary working people do not get their fair share of the nation's wealth.",
-        "lr4W27W29": "There is one law for the rich and one for the poor.",
-        "lr5W27W29": "Management will always try to get the better of employees if it gets the chance.",
+    # Economic Values (values1) - W27/W29
+    economic_values = {
+        "lr1W27W29": "Government should redistribute income from rich to poor",
+        "lr2W27W29": "Big business takes advantage of ordinary people",
+        "lr3W27W29": "Workers don't get fair share of nation's wealth",
+        "lr4W27W29": "There is one law for the rich and one for the poor",
+        "lr5W27W29": "Management exploits employees when possible",
     }
-    for question in values1_questions:
-        if question in row and row[question] != 99:
-            agreement = row[question]
-            if agreement == 5:
-                policies.append(f"💯 Strongly agree: {values1_texts[question]}")
-            elif agreement == 4:
-                policies.append(f"👍 Agree: {values1_texts[question]}")
-            elif agreement == 3:
-                policies.append(f"😐 Neutral on: {values1_texts[question]}")
-            elif agreement == 2:
-                policies.append(f"👎 Disagree: {values1_texts[question]}")
-            elif agreement == 1:
-                policies.append(f"🚫 Strongly disagree: {values1_texts[question]}")
+    for var, statement in economic_values.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    # Values2 ('al1' to 'al5')
-    values2_questions = [
-        "al1W27W29",
-        "al2W27W29",
-        "al3W27W29",
-        "al4W27W29",
-        "al5W27W29",
-    ]
-    values2_texts = {
-        "al1W27W29": "Young people today don't have enough respect for traditional British values.",
-        "al2W27W29": "For some crimes, the death penalty is the most appropriate sentence.",
-        "al3W27W29": "Schools should teach children to obey authority.",
-        "al4W27W29": "Censorship of films and magazines is necessary to uphold moral standards.",
-        "al5W27W29": "People who break the law should be given stiffer sentences.",
+    # Social Values (values2) - W27/W29
+    social_values = {
+        "al1W27W29": "Young people lack respect for traditional values",
+        "al2W27W29": "Death penalty appropriate for some crimes",
+        "al3W27W29": "Schools should teach obedience to authority",
+        "al4W27W29": "Need censorship to uphold morals",
+        "al5W27W29": "Stiffer sentences for lawbreakers",
     }
-    for question in values2_questions:
-        if question in row and row[question] != 99:
-            agreement = row[question]
-            if agreement == 5:
-                policies.append(f"💯 Strongly agree: {values2_texts[question]}")
-            elif agreement == 4:
-                policies.append(f"👍 Agree: {values2_texts[question]}")
-            elif agreement == 3:
-                policies.append(f"😐 Neutral on: {values2_texts[question]}")
-            elif agreement == 2:
-                policies.append(f"👎 Disagree: {values2_texts[question]}")
-            elif agreement == 1:
-                policies.append(f"🚫 Strongly disagree: {values2_texts[question]}")
+    for var, statement in social_values.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    # Culture Wars
-    culture_wars_questions = [
-        "cwLanguageW26W27",
-        "cwStatuesW26W27",
-        "cwTrainingW26W27",
-        "cwAuthorsW26W27",
-        "cwTransW26W27",
-        "cwParentsW26W27",
-    ]
-    culture_wars_texts = {
-        "cwLanguageW26W27": "Too many people are easily offended these days over the language that others use.",
-        "cwStatuesW26W27": "Statues of historical figures shouldn't be taken down, even if they profited from the slave trade.",
-        "cwTrainingW26W27": "Workplaces should end mandatory diversity training.",
-        "cwAuthorsW26W27": "Curriculums should include fewer white male authors and more female and non-white authors.",
-        "cwTransW26W27": "Transgender women should be allowed to compete in female sports.",
-        "cwParentsW26W27": "BBC children's shows should portray more families with same-sex parents.",
+    # Culture Wars - W26/W27
+    culture_war_issues = {
+        "cwLanguageW26W27": ("🗣️", "People are too easily offended by language"),
+        "cwStatuesW26W27": (
+            "🏛️",
+            "Keep statues of prominent historical figures, even if they profited from slavery",
+        ),
+        "cwTrainingW26W27": (
+            "🏢",
+            "Workplaces should end mandatory diversity training",
+        ),
+        "cwAuthorsW26W27": (
+            "📚",
+            "School and university curriculums should include more female/non-white authors",
+        ),
+        "cwTransW26W27": ("🏳️‍⚧️", "Transgender women in female sports"),
+        "cwParentsW26W27": (
+            "👪",
+            "BBC children's TV shows should portray more families with same-sex parents",
+        ),
     }
-    for question in culture_wars_questions:
-        if question in row and row[question] != 99:
-            agreement = row[question]
-            if agreement == 5:
-                policies.append(f"💯 Strongly agree: {culture_wars_texts[question]}")
-            elif agreement == 4:
-                policies.append(f"👍 Agree: {culture_wars_texts[question]}")
-            elif agreement == 3:
-                policies.append(f"😐 Neutral on: {culture_wars_texts[question]}")
-            elif agreement == 2:
-                policies.append(f"👎 Disagree: {culture_wars_texts[question]}")
-            elif agreement == 1:
-                policies.append(f"🚫 Strongly disagree: {culture_wars_texts[question]}")
+    for var, (emoji, statement) in culture_war_issues.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    # Scottish Referendum Intention
-    if "scotReferendumIntentionW29" in row and row["scotReferendumIntentionW29"] != 99:
-        vote = row["scotReferendumIntentionW29"]
-        if vote == 1:
-            policies.append("🏴󠁧󠁢󠁳󠁣󠁴󠁿 I'd vote Yes for Scottish independence.")
-        elif vote == 0:
-            policies.append("🤝 I'd vote No to stay in the UK.")
+    # Scottish Independence - W29
+    if "scotReferendumIntentionW29" in row and row.get("countryW29") == 2:
+        val = row["scotReferendumIntentionW29"]
+        if val == 1:
+            policies.append("🏴󠁧󠁢󠁳󠁣󠁴󠁿 Would vote Yes for Scottish independence")
+        elif val == 0:
+            policies.append("🇬🇧 Would vote No to Scottish independence")
 
-    # British Pride
+    # British Pride - W27
     if "britishPrideW27" in row and row["britishPrideW27"] != 99:
-        agreement = row["britishPrideW27"]
-        if agreement == 5:
-            policies.append("🇬🇧 I strongly feel proud to be British.")
-        elif agreement == 4:
-            policies.append("🇬🇧 I feel proud to be British.")
-        elif agreement == 3:
-            policies.append(
-                "🤔 I neither agree nor disagree about feeling proud to be British."
-            )
-        elif agreement == 2:
-            policies.append("🙁 I don't feel proud to be British.")
-        elif agreement == 1:
-            policies.append("😞 I strongly don't feel proud to be British.")
+        pride_map = {
+            5: "💯 Strongly agree: I feel proud to be British",
+            4: "👍 Agree: I feel proud to be British",
+            3: "😐 Neutral: About pride in being British",
+            2: "👎 Disagree: With feeling proud to be British",
+            1: "🚫 Strongly disagree: With British pride",
+        }
+        policies.append(pride_map.get(row["britishPrideW27"], ""))
 
-    # Deficit Reduction
+    # Deficit Reduction - W27
     if "deficitReduceW27" in row and row["deficitReduceW27"] != 99:
-        value = row["deficitReduceW27"]
-        if value == 4:
-            policies.append("💯 Eliminating the deficit is completely necessary")
-        elif value == 3:
-            policies.append("👍 Eliminating the deficit is important but not essential")
-        elif value == 2:
-            policies.append("🤝 Eliminating the deficit is desirable but not necessary")
-        elif value == 1:
-            policies.append("🚫 Eliminating the deficit is completely unnecessary")
+        deficit_map = {
+            4: "⚠️ Completely necessary to eliminate deficit",
+            3: "💭 Important but not essential to reduce deficit",
+            2: "💫 Desirable but not needed to cut deficit",
+            1: "✅ No need to address deficit",
+        }
+        policies.append(deficit_map.get(row["deficitReduceW27"], ""))
 
-    # Voter ID Support
-    if "voterIDSupportW29" in row and row["voterIDSupportW29"] != 99:
-        value = row["voterIDSupportW29"]
-        if value in [1, 2]:
-            policies.append("🚫 Oppose requiring photo ID to vote")
-        elif value == 3:
-            policies.append("🤝 Neutral on voter ID requirements")
-        elif value in [4, 5]:
-            policies.append("✅ Support requiring photo ID to vote")
-
-    # Monarchy Support
+    # Monarchy Support - W25
     if "monarchW25" in row and row["monarchW25"] != 99:
-        value = row["monarchW25"]
-        if value in [1, 2]:
-            policies.append("🚫 Disagree with keeping the monarchy")
-        elif value == 3:
-            policies.append("🤝 Neutral on maintaining the monarchy")
-        elif value in [4, 5]:
-            policies.append("👑 Support continuing the British monarchy")
+        monarch_map = {
+            5: "💯 Strongly support: maintaining the monarchy",
+            4: "👍 Support: the British monarchy",
+            3: "😐 Neutral: on monarchy continuation",
+            2: "👎 Oppose: the monarchy",
+            1: "🚫 Strongly oppose: having a monarchy",
+        }
+        policies.append(monarch_map.get(row["monarchW25"], ""))
 
-    # Scottish Devolution Preferences
-    if "scotDevoMaxW21" in row and row["scotDevoMaxW21"] != 99:
-        value = row["scotDevoMaxW21"]
-        if value in [1, 2]:
-            policies.append("⬇️ Support reducing Scottish Parliament powers")
-        elif value == 3:
-            policies.append("⚖️ Keep current Scottish Parliament powers")
-        elif value in [4, 5]:
-            policies.append("⬆️ Support expanding Scottish Parliament powers")
+    # Scottish Devolution Max - W21
+    if "scotDevoMaxW21" in row and row.get("countryW21") == 2:
+        devo_map = {
+            5: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Strongly support more Scottish Parliament powers",
+            4: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Support some additional powers for Scotland",
+            3: "⚖️ Maintain current Scottish devolution settlement",
+            2: "🇬🇧 Reduce Scottish Parliament powers",
+            1: "🇬🇧 Strongly reduce Scottish devolution",
+        }
+        policies.append(devo_map.get(row["scotDevoMaxW21"], ""))
 
-    # Economic Ideology Grid
-    economic_views = {
-        "privateEnterpriseW20": {
-            "text": "Private enterprise solves economic problems",
-            "agree_emoji": "🏭",
-            "disagree_emoji": "🏛️",
-        },
-        "stateOwnershipW20": {
-            "text": "Major industries should be state-owned",
-            "agree_emoji": "🏗️",
-            "disagree_emoji": "🏢",
-        },
-        "jobForAllW20": {
-            "text": "Government should provide jobs for all",
-            "agree_emoji": "👷",
-            "disagree_emoji": "💼",
-        },
+    # Economic Ideology - W20
+    ideology_items = {
+        "privateEnterpriseW20": ("🏭", "Private enterprise solves economic problems"),
+        "stateOwnershipW20": ("🏛️", "Major industries should be state-owned"),
+        "jobForAllW20": ("👷", "Government should provide jobs for all"),
     }
+    for var, (emoji, statement) in ideology_items.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {statement}",
+                4: f"👍 Agree: {statement}",
+                3: f"😐 Neutral: {statement}",
+                2: f"👎 Disagree: {statement}",
+                1: f"🚫 Strongly disagree: {statement}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    for var, details in economic_views.items():
-        if var in row and row[var] not in [99, None]:
-            value = row[var]
-            if value in [1, 2]:
-                policies.append(
-                    f"{details['disagree_emoji']} Disagree: {details['text']}"
-                )
-            elif value == 3:
-                policies.append(f"⚖️ Neutral: {details['text']}")
-            elif value in [4, 5]:
-                policies.append(f"{details['agree_emoji']} Agree: {details['text']}")
+    # Public Service Cuts Assessment - W26
+    service_issues = {
+        "cutsTooFarNationalW26": ("🏛️", "Public spending cuts have"),
+        "cutsTooFarNHSW26": ("🏥", "NHS spending cuts have"),
+        "cutsTooFarLocalW26": ("🏘️", "Local service cuts have"),
+        "privatTooFarW26": ("🏭", "Private sector in public services has"),
+        "enviroProtectionW26": ("🌳", "Environmental protections have"),
+    }
+    for var, (emoji, text) in service_issues.items():
+        val = row.get(var, 99)
+        if val not in [99, None]:
+            if val in [1, 2]:
+                policies.append(f"{emoji} {text} not gone far enough")
+            elif val == 3:
+                policies.append(f"{emoji} {text} been about right")
+            elif val in [4, 5]:
+                policies.append(f"{emoji} {text} gone too far")
 
-    # Public Service Cuts Assessment
-    service_issues = [
-        ("cutsTooFarNationalW26", "Public spending cuts have {}"),
-        ("cutsTooFarNHSW26", "NHS spending cuts have {}"),
-        ("cutsTooFarLocalW26", "Local service cuts have {}"),
-        ("privatTooFarW26", "Private sector in public services has {}"),
-        ("enviroProtectionW26", "Environmental protections have {}"),
-    ]
-
-    for var, text in service_issues:
-        value = row.get(var)
-        if value not in [None, 99]:  # Skip missing/don't know responses
-            if value in [1, 2]:
-                policies.append(f"🚧 {text.format('not gone far enough')}")
-            elif value == 3:
-                policies.append(f"⚖️ {text.format('been about right')}")
-            elif value in [4, 5]:
-                policies.append(f"🛑 {text.format('gone too far')}")
-
-    # Defense Spending Preferences
+    # Defense Spending - W25
     if "natSecuritySpendingW25" in row and row["natSecuritySpendingW25"] != 99:
-        value = row["natSecuritySpendingW25"]
-        if value in [1, 2]:
-            policies.append("🕊️ Government should spend less on defense")
-        elif value == 3:
-            policies.append("⚖️ Defense spending should stay about the same")
-        elif value in [4, 5]:
-            policies.append("🛡️ Government should spend more on defense")
+        defense_map = {
+            5: "🛡️ Strongly support increased defense spending",
+            4: "⚔️ Support more defense spending",
+            3: "⚖️ Keep defense spending the same",
+            2: "🕊️ Support reduced defense spending",
+            1: "✌️ Strongly advocate defense spending cuts",
+        }
+        policies.append(defense_map.get(row["natSecuritySpendingW25"], ""))
 
-    # Nuclear Weapons Policy
+    # Nuclear Weapons Policy - W23
     if "keepNukesW23" in row and row["keepNukesW23"] != 99:
-        value = row["keepNukesW23"]
-        if value in [1, 2]:
-            policies.append("🚫 Britain should abandon nuclear weapons")
-        elif value == 3:
-            policies.append("⚖️ Neutral on maintaining nuclear weapons")
-        elif value in [4, 5]:
-            policies.append("✅ Britain should keep its nuclear weapons")
+        nuke_map = {
+            5: "💯 Strongly support: Keeping nuclear weapons",
+            4: "👍 Support: Keeping nuclear weapons",
+            3: "😐 Neutral: Keeping nuclear weapons",
+            2: "👎 Oppose: Keeping nuclear weapons",
+            1: "🚫 Strongly oppose: Keeping nuclear weapons",
+        }
+        policies.append(nuke_map.get(row["keepNukesW23"], ""))
 
-    # Fair Share of Government Spending
+    # Local Funding Fairness - W21
     if "localFairShareW21" in row and row["localFairShareW21"] != 99:
-        value = row["localFairShareW21"]
-        if value == 1:
-            policies.append("🏘️ My area gets less than its fair share of funding")
-        elif value == 2:
-            policies.append("🏘️ My area gets about its fair share of funding")
-        elif value == 3:
-            policies.append("🏘️ My area gets more than its fair share of funding")
+        funding_map = {
+            1: "🏘️ My area gets much less funding than the fair share",
+            2: "🏠 My area gets somewhat less funding",
+            3: "⚖️ My area gets fair funding share",
+            4: "🏛️ My area gets somewhat more funding",
+            5: "💰 My area gets much more funding than the fair share",
+        }
+        policies.append(funding_map.get(row["localFairShareW21"], ""))
 
-    # EU Referendum Re-run
+    # EU Referendum Repeat - W29
     if "euRefDoOverW29" in row and row["euRefDoOverW29"] != 99:
-        value = row["euRefDoOverW29"]
-        if value == 0:
-            policies.append("🚫 Oppose another EU membership referendum")
-        elif value == 1:
-            policies.append("✅ Support another EU membership referendum")
+        policies.append(
+            "🇪🇺 Support another EU membership referendum"
+            if row["euRefDoOverW29"] == 1
+            else "🚫 Oppose new EU referendum"
+        )
 
-    # Railway Nationalization
+    # Rail Nationalization - W26
     if "renationaliseRailW26" in row and row["renationaliseRailW26"] != 99:
-        value = row["renationaliseRailW26"]
-        if value in [1, 2]:
-            policies.append("🚫 Oppose renationalising railways")
-        elif value == 3:
-            policies.append("⚖️ Neutral on railway nationalisation")
-        elif value in [4, 5]:
-            policies.append("✅ Support renationalising railways")
+        rail_map = {
+            1: "🚫 Strongly oppose: rail nationalisation",
+            2: "👎 Disagree: rail nationalisation",
+            3: "😐 Neutral: rail nationalisation",
+            4: "👍 Agree: rail nationalisation",
+            5: "💯 Strongly agree: rail nationalisation",
+        }
+        policies.append(rail_map.get(row["renationaliseRailW26"], ""))
 
-    # Public Service Nationalization
-    nationalization_services = {
-        "nationalizeHospitalsW26": ("Hospitals", "🏥"),
-        "nationalizeSchoolsW26": ("Schools", "🏫"),
-    }
-
-    for var, (service, emoji) in nationalization_services.items():
-        if var in row and row[var] not in [99, None]:
-            value = row[var]
-            if value in [1, 2]:
-                policies.append(f"🏛️ {service} should be public sector-run")
-            elif value == 3:
-                policies.append(
-                    f"⚖️ {service} should be public/private partnership"
-                )
-            elif value in [4, 5]:
-                policies.append(f"🏭 {service} should be private sector-run")
-
-    # Overseas Aid Spending
+    # Overseas Aid Policy - W27
     if "overseasAidW27" in row and row["overseasAidW27"] != 99:
-        value = row["overseasAidW27"]
-        if value in [1, 2]:
-            policies.append("✅ Britain should continue overseas aid spending")
-        elif value == 3:
-            policies.append("⚖️ Neutral on overseas aid spending")
-        elif value in [4, 5]:
-            policies.append("🚫 Britain should stop overseas aid spending")
+        aid_map = {
+            1: "🚫 Strongly disagree: ending foreign aid",
+            2: "👎 Disagree: ending foreign aid",
+            3: "😐 Neutral: ending foreign aid spending",
+            4: "👍 Agree: ending foreign aid",
+            5: "💯 Strongly agree: ending foreign aid",
+        }
+        policies.append(aid_map.get(row["overseasAidW27"], ""))
 
-    # Tax vs Spending Preferences
-    if "taxSpendSelfW28" in row and row["taxSpendSelfW28"] != 99:
-        value = row["taxSpendSelfW28"]
-        if 0 <= value <= 3:
-            policies.append("⬇️ Favour tax cuts and reduced social spending")
-        elif 4 <= value <= 6:
-            policies.append("⚖️ Moderate on tax/spending balance")
-        elif 7 <= value <= 10:
-            policies.append("⬆️ Support higher taxes for social services")
-
-    # Globalization Perception
-    if "globalGoodOverallW21" in row and row["globalGoodOverallW21"] != 99:
-        value = row["globalGoodOverallW21"]
-        if value in [1, 2]:
-            policies.append("👎 Believe globalisation is more bad than good")
-        elif value == 3:
-            policies.append("⚖️ Neutral on globalisation impacts")
-        elif value in [4, 5]:
-            policies.append("👍 Believe globalisation is more good than bad")
-
-    # Policy Positions Grid
-    policy_positions = {
-        "abolishPrivSchoolW27": (
-            "🚫 Abolish private education",
-            "✅ Keep private schools",
-        ),
-        "votesAt16W28": ("⬇️ Lower voting age to 16", "⬆️ Keep voting age at 18"),
-        "banSmokeW27": (
-            "✅ Support smoking ban for post-2009 births",
-            "🚫 Oppose generational smoking ban",
-        ),
-        "rwandaFlightsW27": (
-            "✅ Support Rwanda asylum plan",
-            "🚫 Oppose Rwanda asylum plan",
-        ),
-        "govtEnergyW27": (
-            "🏛️ Support state renewable energy company",
-            "🏭 Prefer private energy sector",
-        ),
-        "newTownW27": (
-            "✅ Support new town development",
-            "🚫 Oppose new town construction",
-        ),
-        "militaryServiceW28": (
-            "✅ Support compulsory service",
-            "🚫 Oppose compulsory service",
-        ),
-        "breakfastClubW28": (
-            "✅ Support free school breakfasts",
-            "🚫 Oppose free breakfast clubs",
-        ),
-        "inheritanceTaxW28": (
-            "✅ Support abolishing inheritance tax",
-            "💰 Keep inheritance tax",
-        ),
+    # Current Policy Support - Various
+    policy_support = {
+        "abolishPrivSchoolW27": ("🏫", "Abolish private education"),
+        "votesAt16W28": ("🗳️", "Lower voting age to 16"),
+        "rwandaFlightsW27": ("🇷🇼", "Rwanda asylum plan"),
+        "newTownW27": ("🏘️", "Build new towns for housing"),
+        "militaryServiceW28": ("🎖️", "Compulsory youth service"),
+        "inheritanceTaxW28": ("💰", "Abolish inheritance tax"),
+        "breakfastClubW28": ("🍳", "Free school breakfast clubs"),
     }
 
-    for var, (support_text, oppose_text) in policy_positions.items():
-        if var in row and row[var] not in [99, None]:
-            value = row[var]
-            if value in [4, 5]:  # Support
-                policies.append(support_text)
-            elif value in [1, 2]:  # Oppose
-                policies.append(oppose_text)
-            elif value == 3:  # Neutral
-                policies.append(f"⚖️ Neutral on {support_text.split()[-2]}")
+    for var, (emoji, desc) in policy_support.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {desc}",
+                4: f"👍 Agree: {desc}",
+                3: f"😐 Neutral: {desc}",
+                2: f"👎 Disagree: {desc}",
+                1: f"🚫 Strongly disagree: {desc}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
 
-    # Triple Lock Policy
-    if "tripleLock28" in row and row["tripleLock28"] != 99:
-        value = row["tripleLock28"]
-        if value in [1, 2]:
-            policies.append("🚫 Oppose maintaining the pensions triple lock")
-        elif value == 3:
-            policies.append("⚖️ Neutral on pensions triple lock")
-        elif value in [4, 5]:
-            policies.append("✅ Support maintaining the pensions triple lock")
+    # Pension and School Funding - W28
+    more_issues = {
+        "tripleLockW28": ("💼", "Maintain pension triple lock"),
+        "privVATW28": ("🏫", "Keep private school VAT exemption"),
+    }
 
-    return policies
+    for var, (emoji, desc) in more_issues.items():
+        val = row.get(var, 99)
+        if val != 99:
+            response = {
+                5: f"💯 Strongly agree: {desc}",
+                4: f"👍 Agree: {desc}",
+                3: f"😐 Neutral: {desc}",
+                2: f"👎 Disagree: {desc}",
+                1: f"🚫 Strongly disagree: {desc}",
+            }.get(val, "")
+            if response:
+                policies.append(response)
+
+    return [p for p in policies if p]
 
 
 def get_country_emoji(country_code):
@@ -878,18 +868,16 @@ def get_eu_referendum_vote(code):
     return vote_map.get(code, None)
 
 
-def get_ns_sec(ns_sec_code):
-    ns_sec_map = {
-        11: "a higher manager",
-        12: "a higher professional",
-        20: "a lower professional/manager",
-        30: "an intermediate worker",
-        40: "a self-employed/small employer",
-        50: "a lower supervisor",
-        60: "a semi-routine worker",
-        70: "a routine worker",
+def get_social_grade(soc_grade_code):
+    social_grade_map = {
+        1: "Higher managerial/professional (A)",
+        2: "Intermediate managerial/professional (B)",
+        3: "Supervisory/clerical (C1)",
+        4: "Skilled manual workers (C2)",
+        5: "Semi/unskilled manual workers (D)",
+        6: "Lowest grade (E)",
     }
-    return ns_sec_map.get(ns_sec_code) if pd.notna(ns_sec_code) else None
+    return social_grade_map.get(soc_grade_code) if pd.notna(soc_grade_code) else None
 
 
 def get_working_status(status_code):
@@ -904,15 +892,3 @@ def get_working_status(status_code):
         emoji, status = status_map[status_code]
         return f"{emoji} I am {status}"
     return None
-
-
-def get_democracy_satisfaction(satisfaction_code):
-    satisfaction_map = {
-        1: "😠 Very dissatisfied with UK democracy.",
-        2: "😕 Somewhat dissatisfied with UK democracy.",
-        3: "🙂 Fairly satisfied with UK democracy.",
-        4: "😊 Very satisfied with UK democracy.",
-    }
-    return (
-        satisfaction_map.get(satisfaction_code) if pd.notna(satisfaction_code) else None
-    )
