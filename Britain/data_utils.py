@@ -320,10 +320,10 @@ def generate_policies(row):
     # Democracy Satisfaction - W29
     if "satDemUKW29" in row and row["satDemUKW29"] != 99:
         satisfaction_map = {
-            1: "😠 Very dissatisfied with how democracy works in the UK",
+            1: "😠 Very dissatisfied with UK democracy",
             2: "😕 Somewhat dissatisfied with UK democracy",
-            3: "🙂 Fairly satisfied with the way democracy works in Britain",
-            4: "😊 Very satisfied with British democracy",
+            3: "🙂 Fairly satisfied with UK democracy",
+            4: "😊 Very satisfied with UK democracy",
         }
         policies.append(satisfaction_map.get(row["satDemUKW29"], ""))
 
@@ -339,9 +339,9 @@ def generate_policies(row):
     if "EUIntegrationSelfW29" in row and row["EUIntegrationSelfW29"] != 99:
         position = row["EUIntegrationSelfW29"]
         if position >= 7:
-            policies.append("🇬🇧 Strongly believe EU unification has gone too far")
+            policies.append("🇬🇧 Strongly believe EU integration has gone too far")
         elif position <= 3:
-            policies.append("🇪🇺 Strongly support pushing European unification further")
+            policies.append("🇪🇺 Strongly support European integration going further")
         else:
             policies.append("🤝 Mixed view on European integration")
 
@@ -364,12 +364,10 @@ def generate_policies(row):
         value = row["enviroGrowthW28"]
         if value >= 5:
             policies.append(
-                "🌳 Strongly prioritise environmental protection over economic growth"
+                "🌳 Prioritise environmental protection over economic growth"
             )
         elif value <= 3:
-            policies.append(
-                "💰 Believe economic growth should take priority over environment"
-            )
+            policies.append("💰 Prioritise economic growth over environment protection")
         else:
             policies.append(
                 "⚖️ Seek balance between environmental protection and economic growth"
@@ -450,30 +448,30 @@ def generate_policies(row):
     if "welfarePreferenceW27" in row and row["welfarePreferenceW27"] != 99:
         welfare_map = {
             1: "📉 Strongly believe welfare benefits are too high",
-            2: "↘️ Think welfare benefits are somewhat too high",
+            2: "↘️ Believe welfare benefits are too high",
             3: "💰 Feel current benefit levels are about right",
             4: "↗️ Believe welfare benefits are too low",
-            5: "📈 Strongly argue benefits should be increased",
+            5: "📈 Strongly believe welfare benefits are too low",
         }
         policies.append(welfare_map.get(row["welfarePreferenceW27"], ""))
 
     # Nationalization Policies - W26
     nationalization_items = {
-        "renationaliseRailW26": "train services",
-        "nationalizeHospitalsW26": "hospitals",
-        # "nationalizeUtilitiesW26": "utilities",
-        "nationalizeSchoolsW26": "schools",
+        "nationalizeTrains": "train services",
+        "nationalizeHospitals": "hospitals",
+        # "nationalizeUtilities": "domestic utilities (gas, electricity, water)",
+        "nationalizeSchools": "schools",
     }
 
     for var, statement in nationalization_items.items():
-        val = row.get(var, 99)
-        if val != 99:
+        val = row.get(var, 9999)
+        if val != 9999:
             response = {
-                1: f"💯 Strongly agree: Public ownership of {statement}",
-                2: f"👍 Agree: Public ownership of {statement}",
-                3: f"⚖️ Mixed: Public / Private ownership of {statement}",
-                4: f"👎 Agree: Private ownership of {statement}",
-                5: f"💯 Strongly agree: Private ownership of {statement}",
+                1: f"🏛️ Entirely by the public sector: {statement}",
+                2: f"🏛️ Mostly by the public sector: {statement}",
+                3: f"⚖️ Equally by the public and private sector: {statement}",
+                4: f"🏭 Mostly by the private sector: {statement}",
+                5: f"🏭 Entirely by the private sector: {statement}",
             }.get(val, "")
             if response:
                 policies.append(response)
@@ -495,9 +493,9 @@ def generate_policies(row):
         if value <= 3:
             policies.append("⬇️ Favour significant tax cuts and reduced social spending")
         elif 4 <= value <= 6:
-            policies.append("⚖️ Support maintaining current tax and spending levels")
+            policies.append("⚖️ Support no major changes to tax and spending levels")
         else:
-            policies.append("⬆️ Advocate higher taxes for expanded social services")
+            policies.append("⬆️ Favour higher taxes for expanded social spending")
 
     # Globalization View - W21
     if "globalGoodOverallW21" in row and row["globalGoodOverallW21"] != 99:
@@ -542,11 +540,11 @@ def generate_policies(row):
     if "israelPalestineW28" in row and row["israelPalestineW28"] != 99:
         stance = row["israelPalestineW28"]
         stance_map = {
-            1: "🇮🇱 Strongly sympathise with Israel",
-            2: "🇮🇱 Lean toward Israel",
+            1: "🇮🇱 Strongly sympathise with Israel over Palestine",
+            2: "🇮🇱 Lean toward Israel over Palestine",
             3: "🤝 Neutral on Israeli-Palestinian conflict",
-            4: "🇵🇸 Lean toward Palestine",
-            5: "🇵🇸 Strongly sympathise with Palestine",
+            4: "🇵🇸 Lean toward Palestine over Israel",
+            5: "🇵🇸 Strongly sympathise with Palestine over Israel",
         }
         policies.append(stance_map.get(stance, ""))
 
@@ -669,21 +667,16 @@ def generate_policies(row):
     # Scottish Devolution Max - W21
     if "scotDevoMaxW21" in row and row.get("countryW21") == 2:
         devo_map = {
-            5: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Strongly support more Scottish Parliament powers",
-            4: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Support some additional powers for Scotland",
-            3: "⚖️ Maintain current Scottish devolution settlement",
-            2: "🇬🇧 Reduce Scottish Parliament powers",
-            1: "🇬🇧 Strongly reduce Scottish devolution",
+            5: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Strongly support many more powers for the Scottish Parliament",
+            4: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Support some more powers for the Scottish Parliament",
+            3: "⚖️ Support maintaining the Scottish Parliament's current powers",
+            2: "🇬🇧 Support fewer powers for the Scottish Parliament",
+            1: "🇬🇧 Strongly support many fewer powers for the Scottish Parliament",
         }
         policies.append(devo_map.get(row["scotDevoMaxW21"], ""))
 
     # Economic Ideology - W20
     ideology_items = {
-        "privateEnterpriseW20": (
-            "🏭",
-            "Private enterprise is the best way to solve Britain's economic problems",
-        ),
-        "stateOwnershipW20": ("🏛️", "Major industries should be state-owned"),
         "jobForAllW20": ("👷", "Government should provide jobs for all"),
     }
     for var, (emoji, statement) in ideology_items.items():
@@ -758,11 +751,11 @@ def generate_policies(row):
     # Local Funding Fairness - W21
     if "localFairShareW21" in row and row["localFairShareW21"] != 99:
         funding_map = {
-            1: "🏘️ My area gets much less funding than the fair share",
-            2: "🏠 My area gets somewhat less funding",
+            1: "🏘️ My area gets much less funding than its fair share",
+            2: "🏠 My area gets somewhat less funding than its fair share",
             3: "⚖️ My area gets fair funding share",
-            4: "🏛️ My area gets somewhat more funding",
-            5: "💰 My area gets much more funding than the fair share",
+            4: "🏛️ My area gets somewhat more funding than its fair share",
+            5: "💰 My area gets much more funding than its fair share",
         }
         policies.append(funding_map.get(row["localFairShareW21"], ""))
 
@@ -871,12 +864,12 @@ def get_eu_referendum_vote(code):
 
 def get_social_grade(soc_grade_code):
     social_grade_map = {
-        1: "🅰 higher managerial/professional.",
-        2: "🅱 intermediate managerial/professional.",
-        3: "🅲 supervisory/clerical.",
-        4: "🅲 skilled manual worker.",
-        5: "🅳 semi/unskilled manual worker.",
-        6: "🅴 lowest grade worker.",
+        1: "(A) higher managerial/professional.",
+        2: "(B) intermediate managerial/professional.",
+        3: "(C1) supervisory/clerical.",
+        4: "(C2) skilled manual worker.",
+        5: "(D) semi/unskilled manual worker.",
+        6: "(E) lowest grade worker.",
     }
     return social_grade_map.get(soc_grade_code) if pd.notna(soc_grade_code) else None
 

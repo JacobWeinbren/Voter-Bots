@@ -80,7 +80,7 @@ def generate_tweet(row, selected_indices):
     if working_status:
         class_info.append(working_status)
     elif social_grade:
-        class_info.append(f"My social grade is {social_grade}")
+        class_info.append(f"💼 My social grade is {social_grade}")
     if class_info:
         tweet = add_section(tweet, ". ".join(class_info))
 
