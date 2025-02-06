@@ -177,7 +177,7 @@ def get_mii_category(mii_code):
         15: ("🇪🇺 Europe/Brexit", "is"),
         16: ("📜 Constitutional issues", "are"),
         17: ("🌐 International trade", "is"),
-        18: ("🏴󠁧󠁢󠁳󠁣󠁴󠁿 Devolution", "is"),
+        18: ("🗺️ Devolution", "is"),
         19: ("🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scottish independence", "is"),
         21: ("🌍 Foreign affairs", "are"),
         22: ("⚔️ War", "is"),
@@ -679,7 +679,10 @@ def generate_policies(row):
 
     # Economic Ideology - W20
     ideology_items = {
-        "privateEnterpriseW20": ("🏭", "Private enterprise solves economic problems"),
+        "privateEnterpriseW20": (
+            "🏭",
+            "Private enterprise is the best way to solve Britain's economic problems",
+        ),
         "stateOwnershipW20": ("🏛️", "Major industries should be state-owned"),
         "jobForAllW20": ("👷", "Government should provide jobs for all"),
     }
