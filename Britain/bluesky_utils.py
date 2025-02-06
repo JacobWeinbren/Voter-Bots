@@ -12,29 +12,24 @@ def post_to_bluesky(tweet, image_path):
     with open(image_path, "rb") as f:
         img_data = f.read()
 
-    try:
-        # Upload the image first
-        upload = client.com.atproto.repo.upload_blob(img_data)
+    # Upload the image first
+    upload = client.com.atproto.repo.upload_blob(img_data)
 
-        # Get the current time with timezone information
-        created_at = datetime.now(timezone.utc).isoformat()
+    # Get the current time with timezone information
+    created_at = datetime.now(timezone.utc).isoformat()
 
-        # Create the post with the uploaded image
-        data = {
-            "repo": client.me.did,
-            "collection": "app.bsky.feed.post",
-            "record": {
-                "text": tweet,  # Ensure the tweet text is included
-                "embed": {
-                    "$type": "app.bsky.embed.images",
-                    "images": [{"alt": tweet, "image": upload.blob}],
-                },
-                "createdAt": created_at,
+    # Create the post with the uploaded image
+    data = {
+        "repo": client.me.did,
+        "collection": "app.bsky.feed.post",
+        "record": {
+            "text": "",
+            "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [{"alt": tweet, "image": upload.blob}],
             },
-        }
+            "createdAt": created_at,
+        },
+    }
 
-        client.com.atproto.repo.create_record(data=data)
-        print("Post created successfully.")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    client.com.atproto.repo.create_record(data=data)
