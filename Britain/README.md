@@ -2,7 +2,7 @@
 
 ### What is the British Voter Bot?
 
-The British Voter Bot creates British voter profiles based on real survey data from the British Election Study (BES). Each profile represents a British voter with their demographic characteristics and political views.
+The British Voter Bot creates British voter profiles based on real survey data from the British Election Study (BES). Each profile displays a British voter with their demographic characteristics and political views.
 
 ### What is the British Election Study (BES)?
 
