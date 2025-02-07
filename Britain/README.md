@@ -10,7 +10,7 @@ The BES is one of the longest-running social science surveys in the world, havin
 
 ### What are the social grades used in the profiles?
 
-The UK uses a social grade classification system:
+Britain uses a social grade classification system:
 
 -   A: Higher managerial, administrative or professional
 -   B: Intermediate managerial, administrative or professional
