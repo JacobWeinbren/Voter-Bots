@@ -106,8 +106,6 @@ Options include:
 -   Jewish ✡️
 -   Buddhist ☸️
 
-This bot helps illustrate the diversity of British voters and their views, based on real survey data.
-
 ### Data Sources
 
 -   British Election Study Internet Panel Waves 1-29: [Download Data](https://www.britishelectionstudy.com/data-object/british-election-study-combined-wave-1-29-internet-panel/)
